@@ -15,14 +15,10 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 }
 //---------------------------------------------------------------------------
 
-
-
-
 void __fastcall TForm1::Button2Click(TObject *Sender)
 {
    ADOTable1->TableName=ComboBox1->Text;
    ADOTable1->Active=true;
-
 }
 //---------------------------------------------------------------------------
 
@@ -50,15 +46,77 @@ Image1->Picture->LoadFromFile(Put);
 }
 //---------------------------------------------------------------------------
 
-
-
-
 void __fastcall TForm1::Button3Click(TObject *Sender)
 {
-  Label2->Caption = ADOTable1->RecordCount;
-  Label3->Caption = ADOTable1->FieldCount;
-  StatusBar1->Panels(0)->Text = ADOTable1->FieldCount;
+  int n(0), m(0);//n-колличество строк, m- коллонок
+  n = ADOTable1->RecordCount;
+  m = ADOTable1->FieldCount;
+  Label2->Caption = n;
+  Label3->Caption = m;
+  StatusBar1->Panels->Items[1]->Text = n;
+  StatusBar1->Panels->Items[2]->Text = m;
+  ADOTable1->First();//Устанавливааем на 1 ячейку перед циклом считывания
+
+  //Объявлеение массива и проход по нему
+ int **array = new int* [n];
+  for (int i=0; i<n; i++)
+  {     array[i] = new int [m];
+        for (int j = 0; j < m; j++)
+        {
+            //array[i][j] = StrToInt(DBGrid1->SelectedField->AsString);
+           //ShowMessage(DBGrid1->SelectedField->AsString)  ;
+           ADOTable1->Next();
+        }
+  }
+  //Memo1->Text = IntToStr(array[10][10]);
+  for (int i=0; i<n; i++) //Освобождаем память
+  delete [] array [m];
+
+  //job for ListBox
+  ListBox1->Clear();
+  ListBox2->Clear();
+  for (int i=1;i<m;i++){
+  ListBox1->Items->Append(ADOTable1->FieldList->Strings[i]);
+  };
+}
+   
+void __fastcall TForm1::ListBox2DragOver(TObject *Sender, TObject *Source,
+      int X, int Y, TDragState State, bool &Accept)
+{
+ TListBox *mSrc =(TListBox *)Source;//Создаем указатель на класс TListBox источник
+
+ //Если у источника больше 0 элементов и выбран хотя бы 1 - разрешаем перенос
+ if (mSrc->Count>0 && mSrc->SelCount>0) Accept = true;
+ else Accept = false;
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TForm1::ListBox2DragDrop(TObject *Sender, TObject *Source,
+      int X, int Y)
+{
+ TListBox *mSrc =(TListBox *)Source;  //Создаем указатель на класс TListBox источник
+ TListBox *mDest=(TListBox *)Sender;  //Создаем указатель на класс получатель (TListBox)
+ TPoint p; //Объявляем класс для определения координат мыши
+ p = Point(X,Y);//Положение курсора мыши
+ int k = mDest ->ItemAtPos(p, true); //Определение индекса элемента списка получателя, на который указывает курсор мыши
+
+ //Вставляем перемещенные элементы в список получатель
+ //Положение перемещенного элемента будет определенно положением екрсора мыши
+ for (int i=0; i<mSrc->Count; i++)//Проход по всем элементам списка источника
+   {
+     if (mSrc->Selected[i] == true)//Если текущий элемент выделен
+     mDest->Items->Insert(k, mSrc->Items->Strings[i]);//Добавляем элемент всписок получатель на место с индесом k
+    }
+
+    //Удаляем выделенные элементы из списка источника
+ for (int i=0; i<mSrc->Count; i++)//Проход по всем элементам списка источника
+   {
+    if (mSrc->Selected[i] == true)//Если текущий элемент выделен
+     {
+       mSrc->Items->Delete(i);// Удаляем элемент из списка источника
+       i--; //Уменьшаем индекс т.к. элемент перемещен
+     }
+   }
+}
+//---------------------------------------------------------------------------
 
