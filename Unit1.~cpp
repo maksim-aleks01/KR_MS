@@ -73,8 +73,8 @@ void __fastcall TForm1::Button3Click(TObject *Sender)
   delete [] array [m];
 
   //job for ListBox
-  ListBox1->Clear();
-  ListBox2->Clear();
+
+
   for (int i=1;i<m;i++){
   ListBox1->Items->Append(ADOTable1->FieldList->Strings[i]);
   };
@@ -119,4 +119,58 @@ void __fastcall TForm1::ListBox2DragDrop(TObject *Sender, TObject *Source,
    }
 }
 //---------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+void __fastcall TForm1::Exit1Click(TObject *Sender)
+{
+        exit(0);
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TForm1::Open1Click(TObject *Sender)
+{
+AnsiString ConStr,Path;
+ConStr="Provider=Microsoft.Jet.OLEDB.4.0; User ID=Admin; Data Source=";
+if (!OpenDialog1->Execute()) return;
+Path=OpenDialog1->FileName;
+ConStr=ConStr+Path;
+StatusBar1->Panels->Items[0]->Text=Path;
+ADOConnection1->ConnectionString=ConStr;
+ADOConnection1->Connected=true;
+ADOConnection1->GetTableNames(ComboBox1->Items);
+ADOTable1->Active=true;
+Edit1->Text=Path;
+AnsiString Put="input.bmp";
+Image1->Picture->LoadFromFile(Put);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::CloseDB1Click(TObject *Sender)
+{
+  //Main_menu->Close
+ADOConnection1->Connected=false;
+ADOTable1->Active=false;
+
+Edit1->Clear();
+
+Image1->Picture->Bitmap = NULL;  //ќчищ€ем Image1
+
+for (int i=0; i < StatusBar1->Panels->Count; i++)//„истка StatusBar
+    {
+      StatusBar1->Panels->Items[i]->Text = "";
+    }
+
+ListBox1->Items->Clear();//„истка 2го уровн€ drag&drop
+ListBox2->Items->Clear();
+}
+//---------------------------------------------------------------------------
+
+
 

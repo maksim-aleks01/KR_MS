@@ -36,7 +36,6 @@ __published:	// IDE-managed Components
         TEdit *Edit1;
         TComboBox *ComboBox1;
         TButton *Button2;
-        TStatusBar *StatusBar1;
         TDBGrid *DBGrid1;
         TADOConnection *ADOConnection1;
         TDataSource *DataSource1;
@@ -51,7 +50,6 @@ __published:	// IDE-managed Components
         TActionList *ActionList1;
         TImageList *ImageList1;
         TOpenDialog *OpenDialog1;
-        TMemo *Memo1;
         TListBox *ListBox2;
         TStaticText *StaticText2;
         TListBox *ListBox1;
@@ -59,6 +57,8 @@ __published:	// IDE-managed Components
         TButton *Button3;
         TLabel *Label2;
         TLabel *Label3;
+        TStatusBar *StatusBar1;
+        TButton *Button4;
         void __fastcall Button2Click(TObject *Sender);
         void __fastcall ComboBox1Change(TObject *Sender);
         void __fastcall Button1Click(TObject *Sender);
@@ -67,6 +67,9 @@ __published:	// IDE-managed Components
           int X, int Y, TDragState State, bool &Accept);
         void __fastcall ListBox2DragDrop(TObject *Sender, TObject *Source,
           int X, int Y);
+        void __fastcall Exit1Click(TObject *Sender);
+        void __fastcall Open1Click(TObject *Sender);
+        void __fastcall CloseDB1Click(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
         __fastcall TForm1(TComponent* Owner);
