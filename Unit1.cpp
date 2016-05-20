@@ -2,7 +2,7 @@
 
 #include <vcl.h>
 #pragma hdrstop
-
+#include <math.h>
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -54,8 +54,9 @@ void __fastcall TForm1::Button3Click(TObject *Sender)
   Label2->Caption = n;
   Label3->Caption = m;
   StatusBar1->Panels->Items[1]->Text = n;
-  StatusBar1->Panels->Items[2]->Text = m;
-  ADOTable1->First();//Устанавливааем на 1 ячейку перед циклом считывания
+  StatusBar1->Panels->Items[2]->Text = m -1;
+  ADOTable1->First();//Устанавливааем на 1 строку перед циклом считывания
+
 
   //Объявлеение массива и проход по нему
  int **array = new int* [n];
@@ -63,18 +64,15 @@ void __fastcall TForm1::Button3Click(TObject *Sender)
   {     array[i] = new int [m];
         for (int j = 0; j < m; j++)
         {
-            //array[i][j] = StrToInt(DBGrid1->SelectedField->AsString);
-           //ShowMessage(DBGrid1->SelectedField->AsString)  ;
-           ADOTable1->Next();
+        
         }
+        ADOTable1->Next();
   }
-  //Memo1->Text = IntToStr(array[10][10]);
-  for (int i=0; i<n; i++) //Освобождаем память
-  delete [] array [m];
+
+ // for (int i=0; i<n; i++) //Освобождаем память
+ // delete [] array [m];
 
   //job for ListBox
-
-
   for (int i=1;i<m;i++){
   ListBox1->Items->Append(ADOTable1->FieldList->Strings[i]);
   };
@@ -120,19 +118,11 @@ void __fastcall TForm1::ListBox2DragDrop(TObject *Sender, TObject *Source,
 }
 //---------------------------------------------------------------------------
 
-
-
-
-
-
-
-
 void __fastcall TForm1::Exit1Click(TObject *Sender)
 {
         exit(0);
 }
 //---------------------------------------------------------------------------
-
 
 void __fastcall TForm1::Open1Click(TObject *Sender)
 {
@@ -172,5 +162,58 @@ ListBox2->Items->Clear();
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TForm1::Button4Click(TObject *Sender)
+{
+ StringGrid1->Cells[0][0] = "Data";
+ StringGrid1->Cells[1][0] = "Мю";
+
+ StringGrid1->Cells[0][1] = "1";
+ StringGrid1->Cells[0][2] = "2";
+ StringGrid1->Cells[0][3] = "3";
+ StringGrid1->Cells[0][4] = "4";
+ StringGrid1->Cells[0][5] = "5";
+ StringGrid1->Cells[0][6] = "6";
+ StringGrid1->Cells[0][7] = "7";
+ StringGrid1->Cells[0][8] = "8";
+ StringGrid1->Cells[0][9] = "9";
+ StringGrid1->Cells[0][10] = "10";
+ StringGrid1->Cells[0][11] = "11";
+ StringGrid1->Cells[0][12] = "12";
+ StringGrid1->Cells[0][13] = "13";
+ StringGrid1->Cells[0][14] = "14";
+ StringGrid1->Cells[0][15] = "15";
+ StringGrid1->Cells[0][16] = "16";
+ StringGrid1->Cells[0][17] = "17";
 
 
+
+
+
+  float Mu=0;
+  float Al=0;
+  int i=1;
+  ADOTable1->First();
+  while (!ADOTable1->Eof)
+  {
+        Mu =0;
+        for (int j = 1; j < ADOTable1->FieldCount; j++)   {
+                        //Расчет Мю
+        Mu += ADOTable1->Fields->Fields[j]->AsFloat;//Сумма строки
+        Mu = sqrt(pow(Mu,2));//Получение мю на i-той строке
+
+
+
+
+          StringGrid1->Cells[1][i] = Mu; //Вывод Мю в таблицу
+        }
+        Al = (StringGrid1->Cells[1][1]) * (StringGrid1->Cells[1][i]);
+         StringGrid1->Cells[2][i] = Al;
+        
+        ADOTable1->Next();
+        i++;
+  }
+
+
+
+}
+//---------------------------------------------------------------------------
