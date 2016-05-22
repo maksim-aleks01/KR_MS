@@ -1,8 +1,8 @@
 object Form1: TForm1
-  Left = 247
-  Top = 118
-  Width = 1205
-  Height = 655
+  Left = 420
+  Top = 216
+  Width = 1130
+  Height = 619
   Caption = 'Form1'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -53,7 +53,7 @@ object Form1: TForm1
       object Edit1: TEdit
         Left = 96
         Top = 8
-        Width = 121
+        Width = 281
         Height = 21
         TabOrder = 1
       end
@@ -64,7 +64,6 @@ object Form1: TForm1
         Height = 21
         ItemHeight = 13
         TabOrder = 2
-        OnChange = ComboBox1Change
       end
       object Button2: TButton
         Left = 248
@@ -173,13 +172,51 @@ object Form1: TForm1
         OnClick = Button4Click
       end
       object StringGrid1: TStringGrid
-        Left = 408
-        Top = 8
-        Width = 681
-        Height = 497
-        ColCount = 3
-        RowCount = 15
+        Left = 416
+        Top = 64
+        Width = 345
+        Height = 409
+        ColCount = 4
+        RowCount = 16
         TabOrder = 6
+        ColWidths = (
+          64
+          85
+          81
+          79)
+      end
+      object Edit2: TEdit
+        Left = 72
+        Top = 392
+        Width = 121
+        Height = 21
+        TabOrder = 7
+        Text = 'Edit2'
+      end
+      object Edit3: TEdit
+        Left = 72
+        Top = 424
+        Width = 121
+        Height = 21
+        TabOrder = 8
+        Text = 'Edit3'
+      end
+      object Edit4: TEdit
+        Left = 72
+        Top = 456
+        Width = 121
+        Height = 21
+        TabOrder = 9
+        Text = 'Edit4'
+      end
+      object Button5: TButton
+        Left = 264
+        Top = 408
+        Width = 75
+        Height = 25
+        Caption = #1040#1083#1092#1100#1072
+        TabOrder = 10
+        OnClick = Button5Click
       end
     end
     object TabSheet3: TTabSheet
@@ -200,8 +237,8 @@ object Form1: TForm1
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 576
-    Width = 1189
+    Top = 540
+    Width = 1114
     Height = 20
     Panels = <
       item
@@ -224,25 +261,25 @@ object Form1: TForm1
     LoginPrompt = False
     Mode = cmShareDenyNone
     Provider = 'Microsoft.Jet.OLEDB.4.0'
-    Left = 264
-    Top = 224
+    Left = 288
+    Top = 504
   end
   object DataSource1: TDataSource
     DataSet = ADOTable1
-    Left = 296
-    Top = 224
+    Left = 320
+    Top = 504
   end
   object ADOTable1: TADOTable
     Connection = ADOConnection1
     CursorType = ctStatic
     TableName = 'XX'
-    Left = 328
-    Top = 224
+    Left = 352
+    Top = 504
   end
   object MainMenu1: TMainMenu
     Images = ImageList1
-    Left = 736
-    Top = 80
+    Left = 984
+    Top = 496
     object Menu1: TMenuItem
       Caption = 'Menu'
       object Open1: TMenuItem
@@ -272,12 +309,12 @@ object Form1: TForm1
     end
   end
   object ActionList1: TActionList
-    Left = 776
-    Top = 80
+    Left = 1024
+    Top = 496
   end
   object ImageList1: TImageList
-    Left = 816
-    Top = 80
+    Left = 1064
+    Top = 496
     Bitmap = {
       494C010104000900040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
@@ -684,7 +721,7 @@ object Form1: TForm1
   end
   object OpenDialog1: TOpenDialog
     Filter = 'Microsoft Access|*.mdb'
-    Left = 584
-    Top = 88
+    Left = 832
+    Top = 496
   end
 end

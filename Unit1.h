@@ -67,8 +67,11 @@ __published:	// IDE-managed Components
         TDBChart *DBChart1;
         TLabel *Label4;
         TStringGrid *StringGrid1;
+        TEdit *Edit2;
+        TEdit *Edit3;
+        TEdit *Edit4;
+        TButton *Button5;
         void __fastcall Button2Click(TObject *Sender);
-        void __fastcall ComboBox1Change(TObject *Sender);
         void __fastcall Button1Click(TObject *Sender);
         void __fastcall Button3Click(TObject *Sender);
         void __fastcall ListBox2DragOver(TObject *Sender, TObject *Source,
@@ -79,6 +82,7 @@ __published:	// IDE-managed Components
         void __fastcall Open1Click(TObject *Sender);
         void __fastcall CloseDB1Click(TObject *Sender);
         void __fastcall Button4Click(TObject *Sender);
+        void __fastcall Button5Click(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
         __fastcall TForm1(TComponent* Owner);
