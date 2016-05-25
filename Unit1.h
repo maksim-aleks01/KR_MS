@@ -27,6 +27,7 @@
 #include <DbChart.hpp>
 #include <TeEngine.hpp>
 #include <TeeProcs.hpp>
+#include <Series.hpp>
 //---------------------------------------------------------------------------
 class TForm1 : public TForm
 {
@@ -35,7 +36,6 @@ __published:	// IDE-managed Components
         TTabSheet *TabSheet1;
         TTabSheet *TabSheet2;
         TLabel *Label1;
-        TImage *Image1;
         TButton *Button1;
         TEdit *Edit1;
         TComboBox *ComboBox1;
@@ -65,12 +65,14 @@ __published:	// IDE-managed Components
         TButton *Button4;
         TTabSheet *TabSheet3;
         TDBChart *DBChart1;
-        TLabel *Label4;
         TStringGrid *StringGrid1;
-        TEdit *Edit2;
-        TEdit *Edit3;
-        TEdit *Edit4;
         TButton *Button5;
+        TLineSeries *Series1;
+        TButton *Button6;
+        TStringGrid *StringGrid2;
+        TButton *Button7;
+        TButton *Button8;
+        TImage *Image1;
         void __fastcall Button2Click(TObject *Sender);
         void __fastcall Button1Click(TObject *Sender);
         void __fastcall Button3Click(TObject *Sender);
@@ -83,6 +85,9 @@ __published:	// IDE-managed Components
         void __fastcall CloseDB1Click(TObject *Sender);
         void __fastcall Button4Click(TObject *Sender);
         void __fastcall Button5Click(TObject *Sender);
+        void __fastcall Button6Click(TObject *Sender);
+        void __fastcall Button7Click(TObject *Sender);
+        void __fastcall Button8Click(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
         __fastcall TForm1(TComponent* Owner);

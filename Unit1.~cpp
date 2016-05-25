@@ -50,19 +50,22 @@ if (OpenDialog1->FileName!="")
   ADOConnection1->GetTableNames(ComboBox1->Items);
   AnsiString Put="input.bmp";
   Image1->Picture->LoadFromFile(Put);
+  AnsiString Path=OpenDialog1->FileName;
+  StatusBar1->Panels->Items[0]->Text="Путь" + Path;
   }
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::Button3Click(TObject *Sender)
 {
+        if (ADOTable1->Active==false) {return; ShowMessage("БД не открыта!"); Button3->Visible = false;}
   int n(0), m(0);//n-колличество строк, m- коллонок
   n = ADOTable1->RecordCount;
   m = ADOTable1->FieldCount;
-  Label2->Caption = n;
-  Label3->Caption = m;
-  StatusBar1->Panels->Items[1]->Text = n;
-  StatusBar1->Panels->Items[2]->Text = m -1;
+  Label2->Caption = "Строк: " + FloatToStr(n);
+  Label3->Caption = "Столбцев: " + FloatToStr(m - 1);
+  StatusBar1->Panels->Items[1]->Text = "Строк: " + FloatToStr(n);
+  StatusBar1->Panels->Items[2]->Text = "Столбцев: " + FloatToStr(m - 1);
   ADOTable1->First();//Устанавливааем на 1 строку перед циклом считывания
 
 
@@ -107,7 +110,7 @@ void __fastcall TForm1::ListBox2DragDrop(TObject *Sender, TObject *Source,
  TPoint p; //Объявляем класс для определения координат мыши
  p = Point(X,Y);//Положение курсора мыши
  int k = mDest ->ItemAtPos(p, true); //Определение индекса элемента списка получателя, на который указывает курсор мыши
-
+   if (mSrc->ItemIndex == mDest->ItemIndex && mSrc->Name == mDest->Name ) return;
  //Вставляем перемещенные элементы в список получатель
  //Положение перемещенного элемента будет определенно положением екрсора мыши
  for (int i=0; i<mSrc->Count; i++)//Проход по всем элементам списка источника
@@ -125,7 +128,7 @@ void __fastcall TForm1::ListBox2DragDrop(TObject *Sender, TObject *Source,
        i--; //Уменьшаем индекс т.к. элемент перемещен
      }
    }
-   if (mSrc->ItemIndex == mDest->ItemIndex && mSrc->Name == mDest->Name ) return;
+   
 }
 //---------------------------------------------------------------------------
 
@@ -142,7 +145,7 @@ ConStr="Provider=Microsoft.Jet.OLEDB.4.0; User ID=Admin; Data Source=";
 if (!OpenDialog1->Execute()) return;
 Path=OpenDialog1->FileName;
 ConStr=ConStr+Path;
-StatusBar1->Panels->Items[0]->Text=Path;
+StatusBar1->Panels->Items[0]->Text="Путь" + Path;
 ADOConnection1->ConnectionString=ConStr;
 ADOConnection1->Connected=true;
 ADOConnection1->GetTableNames(ComboBox1->Items);
@@ -190,7 +193,7 @@ void __fastcall TForm1::Button4Click(TObject *Sender)
      };
 ////////////////////////////////////////////////////////////////////////////////
 
-  float Mu=0;    //Альфа=arccos(k/Q); k = вектор(h0)*вектор(hi), Q = Mu0*Mi.
+  float Mu=0;    //Альфа=arccos(k/Q); k = вектор(h0)*вектор(hi), Q = sqrt(Mu0*Mi).
   int i=1;
   ADOTable1->First();
   while (!ADOTable1->Eof)
@@ -210,10 +213,10 @@ void __fastcall TForm1::Button4Click(TObject *Sender)
 //---------------------Алфьа------------------------------------------------------
 void __fastcall TForm1::Button5Click(TObject *Sender)
 {
- float Al=0, k=0, Q=0;//Альфа=arccos(k/Q); k = вектор(h0)*вектор(hi), Q = Mu0*Mi.
+ float Al=0, k=0, Q=0;//Альфа=arccos(k/Q); k = (h0)*(hi), Q = (Mu0*Mi)^2.
 
 ////////Одномерный динамический массив, содержит 1-ю строку ADOTable1///////////
-  float *farray = new float [ADOTable1->RecordCount];
+  float *farray = new float [ADOTable1->FieldCount];
   ADOTable1->First();
   for (int i=0; i<ADOTable1->FieldCount; i++)
     {
@@ -221,8 +224,8 @@ void __fastcall TForm1::Button5Click(TObject *Sender)
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-////k = вектор(h0)*вектор(hi); Умножаем 1строчный массив на ячейки ADOTable1////
-  float *karray = new float [ADOTable1->RecordCount];
+////k = (h0)*(hi); Умножаем 1строчный массив на ячейки ADOTable1////
+  float *karray = new float [ADOTable1->FieldCount];
    int i=0;
   ADOTable1->First();
   while (!ADOTable1->Eof)
@@ -233,7 +236,7 @@ void __fastcall TForm1::Button5Click(TObject *Sender)
           k += farray[j] * ADOTable1->Fields->Fields[j]->AsFloat;
        }
       karray[i] = k;
-      //StringGrid1->Cells[2][i+1] = k;
+      //StringGrid1->Cells[2][i+1] = karray[i];
       i++;
       ADOTable1->Next();
   };
@@ -246,12 +249,14 @@ void __fastcall TForm1::Button5Click(TObject *Sender)
     while (!ADOTable1->Eof)
     {
         Q = 0;
-         for (int j=1; j<ADOTable1->FieldCount; j++)
+         for (int j=0; j<ADOTable1->FieldCount; j++)
          {
           Q += pow((ADOTable1->Fields->Fields[j]->AsFloat),2);
          }
-          Qarray[z] = Q;
-     // StringGrid1->Cells[3][z+1] = Qarray[z];
+         float Q1;
+         if (z == 0)  {Q1 = Q;}
+         Qarray[z] = sqrt(Q)*sqrt(Q1);
+      //StringGrid1->Cells[3][z+1] = Qarray[z];
       z++;
       ADOTable1->Next();
     }
@@ -260,15 +265,89 @@ void __fastcall TForm1::Button5Click(TObject *Sender)
 ///////////////////Получаем Альфа///////////////////////////////////////////////
            for (int i=0; i<ADOTable1->RecordCount; i++)
            {
-             StringGrid1->Cells[2][i+1] = Qarray[i]/karray[i];
+            StringGrid1->Cells[2][i+1] = acos(karray[i]/Qarray[i]);
            }
 ////////////////////////////////////////////////////////////////////////////////
 
 
-  /////////////////////////Освобождаем память///////////////////////////////////
+   /////////////////////////Освобождаем память///////////////////////////////////
    delete [] farray;
    delete [] karray;
    delete [] Qarray;
 }
 //---------------------------------------------------------------------------
+
+void __fastcall TForm1::Button6Click(TObject *Sender)
+{
+   Series1->LinePen->Width = 5; Series1->SeriesColor = clRed;
+   Series1->Clear();
+
+        for( int i = 0; i < ADOTable1->RecordCount; i++)
+          {
+            Series1->AddXY(StrToFloat(StringGrid1->Cells[1][i]), StrToFloat(StringGrid1->Cells[2][i]));
+          }
+
+}
+//---------------------------------------------------------------------------
+
+
+
+
+  int iSchetchik = 0;//Счетчик нажатия на кнопку [Построить таблицу]
+void __fastcall TForm1::Button7Click(TObject *Sender)
+{
+  iSchetchik++;
+                           //Строим структуру, столбцы и строки
+  int iKolRecord = ListBox2->Items->Count;//Получаем колличество строк в принимаемом списке
+  int iKolField =  ADOTable1->FieldCount;//Получаем колличество столбцев в созд. таблице
+  StringGrid2->RowCount=StringGrid2->RowCount+(iKolRecord-1);
+  StringGrid2->ColCount = StringGrid2->ColCount+(iKolField-2);
+
+  if ( iSchetchik == 1)
+  {
+    Button7->Enabled = False;
+  }
+    int iAR = ADOTable1->RecordCount; //Колличество строк в ADOTable1
+
+
+    for (int i=0; i<iAR; i++)
+    {   int j=0;
+       // while (ListBox2->Items[i] == ADOTable1->Fields->Fields[i])
+        {
+         //   StringGrid1->Cells[i][j] = ADOTable1->Fields[0][iAR]
+        }
+        j++;
+    }
+  //
+   //for (int j=0; j<iKolRecord; j++)
+   {
+   // if (ListBox2->Items[i] == ADOTable1->Fields[0][iAR])
+     {
+    //StringGrid1->Cells[i][j] = ADOTable1->Fields[0][iAR];
+     }
+
+   }
+
+
+
+
+}
+//---------------------------------[Очистка таблицы]------------------------------------------
+
+void __fastcall TForm1::Button8Click(TObject *Sender)
+{
+   for (int i = 0; i < StringGrid2->ColCount; i++)
+   {
+    for (int j = 0; j < StringGrid2->RowCount; j++)
+    {
+      StringGrid2->Cells[i][j] = "";
+      iSchetchik = 0;
+      Button7->Enabled = True;
+    }
+   }
+   StringGrid2->RowCount= 0;
+   StringGrid2->ColCount = 0;
+}
+//---------------------------------------------------------------------------
+
 
