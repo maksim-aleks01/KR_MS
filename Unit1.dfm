@@ -1,8 +1,8 @@
 object Form1: TForm1
-  Left = 282
-  Top = 143
-  Width = 1124
-  Height = 602
+  Left = 133
+  Top = 179
+  Width = 1448
+  Height = 609
   Caption = 'Form1'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -17,10 +17,10 @@ object Form1: TForm1
   object PageControl1: TPageControl
     Left = 0
     Top = 0
-    Width = 1105
+    Width = 1425
     Height = 521
-    ActivePage = TabSheet1
-    TabIndex = 0
+    ActivePage = TabSheet2
+    TabIndex = 1
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'Level 1'
@@ -62,7 +62,7 @@ object Form1: TForm1
         Top = 48
         Width = 145
         Height = 21
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 2
       end
       object Button2: TButton
@@ -167,15 +167,16 @@ object Form1: TForm1
       object StringGrid1: TStringGrid
         Left = 808
         Top = 64
-        Width = 289
+        Width = 585
         Height = 409
-        ColCount = 3
         RowCount = 16
         TabOrder = 6
         ColWidths = (
           64
           115
-          100)
+          126
+          126
+          110)
         RowHeights = (
           24
           24
@@ -230,6 +231,14 @@ object Form1: TForm1
         TabOrder = 10
         OnClick = Button8Click
       end
+      object Edit2: TEdit
+        Left = 192
+        Top = 392
+        Width = 121
+        Height = 21
+        TabOrder = 11
+        Text = 'Edit2'
+      end
     end
     object TabSheet3: TTabSheet
       Caption = 'TabSheet3'
@@ -275,8 +284,8 @@ object Form1: TForm1
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 523
-    Width = 1108
+    Top = 530
+    Width = 1432
     Height = 20
     Panels = <
       item

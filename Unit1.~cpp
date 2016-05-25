@@ -17,6 +17,10 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 AnsiString s1= "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=";
 AnsiString s2 = ";Persist Security Info=False";
 AnsiString ConStr;
+
+//Объявление глобальных перемменных и массивов
+
+
 //---------------------------------------------------------------------------
 
 
@@ -36,7 +40,7 @@ void __fastcall TForm1::Button2Click(TObject *Sender)
 
 void __fastcall TForm1::Button1Click(TObject *Sender)
 {
-  OpenDialog1->Execute();
+OpenDialog1->Execute();
 if (ADOTable1->Active) ADOTable1->Active=false;
 if (ADOConnection1->Connected==true) ADOConnection1->Connected=false;
 ComboBox1->Clear();
@@ -70,15 +74,15 @@ void __fastcall TForm1::Button3Click(TObject *Sender)
 
 
   //Объявлеение массива и проход по нему
- int **array = new int* [n];
-  for (int i=0; i<n; i++)
-  {     array[i] = new int [m];
-        for (int j = 0; j < m; j++)
-        {
+ //int **array = new int* [n];
+ // for (int i=0; i<n; i++)
+  //{     array[i] = new int [m];
+        //for (int j = 0; j < m; j++)
+      //  {
         
-        }
-        ADOTable1->Next();
-  }
+      //  }
+   //     ADOTable1->Next();
+ // }
 
  // for (int i=0; i<n; i++) //Освобождаем память
  // delete [] array [m];
@@ -110,7 +114,7 @@ void __fastcall TForm1::ListBox2DragDrop(TObject *Sender, TObject *Source,
  TPoint p; //Объявляем класс для определения координат мыши
  p = Point(X,Y);//Положение курсора мыши
  int k = mDest ->ItemAtPos(p, true); //Определение индекса элемента списка получателя, на который указывает курсор мыши
-   if (mSrc->ItemIndex == mDest->ItemIndex && mSrc->Name == mDest->Name ) return;
+   if (mSrc->ItemIndex == mDest->ItemIndex && mSrc->Name == mDest->Name ) return; //Проверка на вложеность итемов друг в друга
  //Вставляем перемещенные элементы в список получатель
  //Положение перемещенного элемента будет определенно положением екрсора мыши
  for (int i=0; i<mSrc->Count; i++)//Проход по всем элементам списка источника
@@ -188,14 +192,15 @@ void __fastcall TForm1::Button4Click(TObject *Sender)
      {
       for (int j = 0; j < ADOTable1->FieldCount; j++)
          StringGrid1->Cells[0][g] = ADOTable1->Fields->Fields[0]->AsFloat;
-       g++;
        ADOTable1->Next();
+       g++;
      };
 ////////////////////////////////////////////////////////////////////////////////
 
-  float Mu=0;    //Альфа=arccos(k/Q); k = вектор(h0)*вектор(hi), Q = sqrt(Mu0*Mi).
+  double Mu=0;    //Альфа=arccos(k/Q); k = вектор(h0)*вектор(hi), Q = sqrt(Mu0*Mi).
   int i=1;
   ADOTable1->First();
+  double *MuArray = new double [ADOTable1->FieldCount]; //массив значений Мю
   while (!ADOTable1->Eof)
   {
         Mu =0;
@@ -204,6 +209,7 @@ void __fastcall TForm1::Button4Click(TObject *Sender)
           Mu += pow((ADOTable1->Fields->Fields[j]->AsFloat),2);//Сумма квадратов строки
         }
          Mu = sqrt(Mu);//Извлекаем мю из под знака корня
+         MuArray[i-1] = Mu;
          StringGrid1->Cells[1][i] = Mu; //Вывод Мю в таблицу
          ADOTable1->Next();
          i++;
@@ -213,67 +219,53 @@ void __fastcall TForm1::Button4Click(TObject *Sender)
 //---------------------Алфьа------------------------------------------------------
 void __fastcall TForm1::Button5Click(TObject *Sender)
 {
- float Al=0, k=0, Q=0;//Альфа=arccos(k/Q); k = (h0)*(hi), Q = (Mu0*Mi)^2.
+ double k=0; // Al=0, Q=0;//Альфа=arccos(k/Q); k = (h0)*(hi), Q = (Mu0*Mi)^2.
 
 ////////Одномерный динамический массив, содержит 1-ю строку ADOTable1///////////
-  float *farray = new float [ADOTable1->FieldCount];
+  double *MoArray = new double [ADOTable1->FieldCount]; //массив Мю нулевого
   ADOTable1->First();
-  for (int i=0; i<ADOTable1->FieldCount; i++)
+  for (int i=1; i<ADOTable1->FieldCount; i++)
     {
-       farray[i] = ADOTable1->Fields->Fields[i]->AsFloat;
+       MoArray[i-1] = ADOTable1->Fields->Fields[i]->AsFloat;
     }
 ////////////////////////////////////////////////////////////////////////////////
 
 ////k = (h0)*(hi); Умножаем 1строчный массив на ячейки ADOTable1////
-  float *karray = new float [ADOTable1->FieldCount];
    int i=0;
+  double *AlArray = new double [ADOTable1->FieldCount]; //массив значений альфа
   ADOTable1->First();
   while (!ADOTable1->Eof)
   {
     k=0;
        for (int j=1; j<ADOTable1->FieldCount; j++)
        {
-          k += farray[j] * ADOTable1->Fields->Fields[j]->AsFloat;
+          k += MoArray[j-1] * ADOTable1->Fields->Fields[j]->AsFloat;
        }
       karray[i] = k;
-      //StringGrid1->Cells[2][i+1] = karray[i];
-      i++;
+      StringGrid1->Cells[2][i+1] = FloatToStr(acos(k/MuArray[0]*MuArray[i])));
+      //StringGrid1->Cells[2][i+1] = FloatToStr(acos(k/(StrToFloat(StringGrid1->Cells[1][1])*StrToFloat(StringGrid1->Cells[1][i+1]))));
+      StringGrid1->Cells[3][i+1] = StringGrid1->Cells[1][1]*StringGrid1->Cells[1][1];
+      StringGrid1->Cells[4][i+1] = karray[0];
       ADOTable1->Next();
+      i++;
   };
 ////////////////////////////////////////////////////////////////////////////////
+     /////////////////////////Освобождаем память///////////////////////////////////
+   delete [] MoArray;
+   delete [] MuArray;
+   delete [] AlArray;
+   //delete [] Qarray;
 
-///////////////////Q = Mu0*Mi.//////////////////////////////////////////////////
-    float *Qarray = new float [ADOTable1->RecordCount];
-    int z=0;
-    ADOTable1->First();
-    while (!ADOTable1->Eof)
-    {
-        Q = 0;
-         for (int j=0; j<ADOTable1->FieldCount; j++)
-         {
-          Q += pow((ADOTable1->Fields->Fields[j]->AsFloat),2);
-         }
-         float Q1;
-         if (z == 0)  {Q1 = Q;}
-         Qarray[z] = sqrt(Q)*sqrt(Q1);
-      //StringGrid1->Cells[3][z+1] = Qarray[z];
-      z++;
-      ADOTable1->Next();
-    }
-////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////Получаем Альфа///////////////////////////////////////////////
-           for (int i=0; i<ADOTable1->RecordCount; i++)
+          // for (int i=0; i<ADOTable1->RecordCount; i++)
            {
-            StringGrid1->Cells[2][i+1] = acos(karray[i]/Qarray[i]);
+           // StringGrid1->Cells[2][i+1] = acos(karray[i]/Qarray[i]);
            }
 ////////////////////////////////////////////////////////////////////////////////
 
 
-   /////////////////////////Освобождаем память///////////////////////////////////
-   delete [] farray;
-   delete [] karray;
-   delete [] Qarray;
+
 }
 //---------------------------------------------------------------------------
 
@@ -284,7 +276,7 @@ void __fastcall TForm1::Button6Click(TObject *Sender)
 
         for( int i = 0; i < ADOTable1->RecordCount; i++)
           {
-            Series1->AddXY(StrToFloat(StringGrid1->Cells[1][i]), StrToFloat(StringGrid1->Cells[2][i]));
+           // Series1->AddXY(StrToFloat(StringGrid1->Cells[1][i]), StrToFloat(StringGrid1->Cells[2][i]));
           }
 
 }
@@ -312,7 +304,8 @@ void __fastcall TForm1::Button7Click(TObject *Sender)
 
     for (int i=0; i<iAR; i++)
     {   int j=0;
-       // while (ListBox2->Items[i] == ADOTable1->Fields->Fields[i])
+     //Edit2->Text = ListBox2->Items->Strings[ListBox2->ItemIndex[i]];
+         //while (ListBox2->Items->Strings[ListBox2->ItemIndex] == ADOTable1->Fields->Fields[i])
         {
          //   StringGrid1->Cells[i][j] = ADOTable1->Fields[0][iAR]
         }
@@ -349,5 +342,3 @@ void __fastcall TForm1::Button8Click(TObject *Sender)
    StringGrid2->ColCount = 0;
 }
 //---------------------------------------------------------------------------
-
-

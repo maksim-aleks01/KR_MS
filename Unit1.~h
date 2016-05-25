@@ -73,6 +73,7 @@ __published:	// IDE-managed Components
         TButton *Button7;
         TButton *Button8;
         TImage *Image1;
+        TEdit *Edit2;
         void __fastcall Button2Click(TObject *Sender);
         void __fastcall Button1Click(TObject *Sender);
         void __fastcall Button3Click(TObject *Sender);
