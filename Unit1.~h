@@ -28,6 +28,7 @@
 #include <TeEngine.hpp>
 #include <TeeProcs.hpp>
 #include <Series.hpp>
+#include <Buttons.hpp>
 //---------------------------------------------------------------------------
 class TForm1 : public TForm
 {
@@ -58,15 +59,10 @@ __published:	// IDE-managed Components
         TStaticText *StaticText2;
         TListBox *ListBox1;
         TStaticText *StaticText1;
-        TButton *Button3;
-        TLabel *Label2;
-        TLabel *Label3;
         TStatusBar *StatusBar1;
-        TButton *Button4;
         TTabSheet *TabSheet3;
         TDBChart *DBChart1;
         TStringGrid *StringGrid1;
-        TButton *Button5;
         TLineSeries *Series1;
         TButton *Button6;
         TStringGrid *StringGrid2;
@@ -74,9 +70,13 @@ __published:	// IDE-managed Components
         TButton *Button8;
         TImage *Image1;
         TEdit *Edit2;
+        TLabel *Label4;
+        TBitBtn *BitBtn1;
+        TBitBtn *BitBtn2;
+        TButton *Button3;
+        TLabel *Label2;
         void __fastcall Button2Click(TObject *Sender);
         void __fastcall Button1Click(TObject *Sender);
-        void __fastcall Button3Click(TObject *Sender);
         void __fastcall ListBox2DragOver(TObject *Sender, TObject *Source,
           int X, int Y, TDragState State, bool &Accept);
         void __fastcall ListBox2DragDrop(TObject *Sender, TObject *Source,
@@ -84,11 +84,12 @@ __published:	// IDE-managed Components
         void __fastcall Exit1Click(TObject *Sender);
         void __fastcall Open1Click(TObject *Sender);
         void __fastcall CloseDB1Click(TObject *Sender);
-        void __fastcall Button4Click(TObject *Sender);
-        void __fastcall Button5Click(TObject *Sender);
         void __fastcall Button6Click(TObject *Sender);
         void __fastcall Button7Click(TObject *Sender);
         void __fastcall Button8Click(TObject *Sender);
+        void __fastcall Edit2KeyPress(TObject *Sender, char &Key);
+        void __fastcall BitBtn1Click(TObject *Sender);
+        void __fastcall Button3Click(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
         __fastcall TForm1(TComponent* Owner);

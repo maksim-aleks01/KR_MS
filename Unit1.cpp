@@ -31,10 +31,17 @@ void __fastcall TForm1::Button2Click(TObject *Sender)
         {
          ADOTable1->TableName=ComboBox1->Text;
          ADOTable1->Active=true;
-        }
-  // ADOTable1->TableName=ComboBox1->Text;
-  // ADOTable1->Active=true;
 
+         if (ListBox1->Items != 0) ListBox1->Items->Clear();//Что бы не переполнялся ListBox1 
+
+         StatusBar1->Panels->Items[1]->Text = "Строк: " + FloatToStr(ADOTable1->RecordCount); //Пишем кол-во стобцев и строк
+         StatusBar1->Panels->Items[2]->Text = "Столбцев: " + FloatToStr(ADOTable1->FieldCount);
+
+         for (int i=1;i<ADOTable1->FieldCount;i++)   //Заполняем марками Список "источник"
+              {ListBox1->Items->Append(ADOTable1->FieldList->Strings[i]);}
+        }
+        else
+        {ShowMessage("Таблица не выбрана!");}
 }
 //------------------[Кнопка открыть БД]---------------------------------------------------------
 
@@ -43,7 +50,9 @@ void __fastcall TForm1::Button1Click(TObject *Sender)
 OpenDialog1->Execute();
 if (ADOTable1->Active) ADOTable1->Active=false;
 if (ADOConnection1->Connected==true) ADOConnection1->Connected=false;
+if (ListBox1->Items != 0) ListBox1->Items->Clear();
 ComboBox1->Clear();
+
 
 if (OpenDialog1->FileName!="")
   {
@@ -56,43 +65,19 @@ if (OpenDialog1->FileName!="")
   Image1->Picture->LoadFromFile(Put);
   AnsiString Path=OpenDialog1->FileName;
   StatusBar1->Panels->Items[0]->Text="Путь" + Path;
+  
+  /////////////////////////Заполнение шапки таблицы///////////////////////////////
+      StringGrid1->Cells[1][0] = "Mu";
+      StringGrid1->Cells[2][0] = "Alpha";
+      StringGrid1->Cells[3][0] = "Mu+";
+      StringGrid1->Cells[4][0] = "Mu-";
+      StringGrid1->Cells[5][0] = "Alpha+";
+      StringGrid1->Cells[6][0] = "Alpha-";
+////////////////////////////////////////////////////////////////////////////////
   }
 }
+
 //---------------------------------------------------------------------------
-
-void __fastcall TForm1::Button3Click(TObject *Sender)
-{
-        if (ADOTable1->Active==false) {return; ShowMessage("БД не открыта!"); Button3->Visible = false;}
-  int n(0), m(0);//n-колличество строк, m- коллонок
-  n = ADOTable1->RecordCount;
-  m = ADOTable1->FieldCount;
-  Label2->Caption = "Строк: " + FloatToStr(n);
-  Label3->Caption = "Столбцев: " + FloatToStr(m - 1);
-  StatusBar1->Panels->Items[1]->Text = "Строк: " + FloatToStr(n);
-  StatusBar1->Panels->Items[2]->Text = "Столбцев: " + FloatToStr(m - 1);
-  ADOTable1->First();//Устанавливааем на 1 строку перед циклом считывания
-
-
-  //Объявлеение массива и проход по нему
- //int **array = new int* [n];
- // for (int i=0; i<n; i++)
-  //{     array[i] = new int [m];
-        //for (int j = 0; j < m; j++)
-      //  {
-        
-      //  }
-   //     ADOTable1->Next();
- // }
-
- // for (int i=0; i<n; i++) //Освобождаем память
- // delete [] array [m];
-
-  //job for ListBox
-  for (int i=1;i<m;i++){
-  ListBox1->Items->Append(ADOTable1->FieldList->Strings[i]);
-  };
-}
-   
 void __fastcall TForm1::ListBox2DragOver(TObject *Sender, TObject *Source,
       int X, int Y, TDragState State, bool &Accept)
 {
@@ -101,9 +86,8 @@ void __fastcall TForm1::ListBox2DragOver(TObject *Sender, TObject *Source,
  //Если у источника больше 0 элементов и выбран хотя бы 1 - разрешаем перенос
  if (mSrc->Count>0 && mSrc->SelCount>0) Accept = true;
  else Accept = false;
-
-
 }
+
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::ListBox2DragDrop(TObject *Sender, TObject *Source,
@@ -115,6 +99,7 @@ void __fastcall TForm1::ListBox2DragDrop(TObject *Sender, TObject *Source,
  p = Point(X,Y);//Положение курсора мыши
  int k = mDest ->ItemAtPos(p, true); //Определение индекса элемента списка получателя, на который указывает курсор мыши
    if (mSrc->ItemIndex == mDest->ItemIndex && mSrc->Name == mDest->Name ) return; //Проверка на вложеность итемов друг в друга
+
  //Вставляем перемещенные элементы в список получатель
  //Положение перемещенного элемента будет определенно положением екрсора мыши
  for (int i=0; i<mSrc->Count; i++)//Проход по всем элементам списка источника
@@ -132,16 +117,16 @@ void __fastcall TForm1::ListBox2DragDrop(TObject *Sender, TObject *Source,
        i--; //Уменьшаем индекс т.к. элемент перемещен
      }
    }
-   
-}
-//---------------------------------------------------------------------------
 
+}
+
+//------------------------------------------------------------------------------
 void __fastcall TForm1::Exit1Click(TObject *Sender)
 {
         exit(0);
 }
-//------------------------[Кнопка МЕНЮ->открыть БД]--------------------------------
 
+//------------------------[Кнопка МЕНЮ->открыть БД]-----------------------------
 void __fastcall TForm1::Open1Click(TObject *Sender)
 {
 AnsiString ConStr,Path;
@@ -157,6 +142,22 @@ ADOTable1->Active=true;
 Edit1->Text=Path;
 AnsiString Put="input.bmp";
 Image1->Picture->LoadFromFile(Put);
+StatusBar1->Panels->Items[1]->Text = "Строк: " + FloatToStr(ADOTable1->RecordCount);
+StatusBar1->Panels->Items[2]->Text = "Столбцев: " + FloatToStr(ADOTable1->FieldCount);
+
+for (int i=1;i<ADOTable1->FieldCount;i++) //Заполнение списка источника (станциями)
+  {
+    ListBox1->Items->Append(ADOTable1->FieldList->Strings[i]);
+  }
+
+    /////////////////////Заполнение шапки таблицы///////////////////////////////
+      StringGrid1->Cells[1][0] = "Mu";
+      StringGrid1->Cells[2][0] = "Alpha";
+      StringGrid1->Cells[3][0] = "Mu+";
+      StringGrid1->Cells[4][0] = "Mu-";
+      StringGrid1->Cells[5][0] = "Alpha+";
+      StringGrid1->Cells[6][0] = "Alpha-";
+    ////////////////////////////////////////////////////////////////////////////
 }
 //----------------------[Кнопка МЕНЮ->закрыт БД]------------------------------------
 
@@ -177,27 +178,121 @@ for (int i=0; i < StatusBar1->Panels->Count; i++)//Чистка StatusBar
 
 ListBox1->Items->Clear();//Чистка 2го уровня drag&drop
 ListBox2->Items->Clear();
+
+ for (int i = 0; i < StringGrid1->ColCount; i++) //Очистка таблицы расчетов
+   { for (int j = 0; j < StringGrid1->RowCount; j++)
+       { StringGrid1->Cells[i][j] = "";}
+   }
+   StringGrid2->RowCount= 0;
+   StringGrid2->ColCount = 0;
+
+   for (int i = 0; i < StringGrid2->ColCount; i++) //Очистка таблицы 2-го уровня
+   { for (int j = 0; j < StringGrid2->RowCount; j++)
+       { StringGrid2->Cells[i][j] = "";}
+   }
+   Button7->Enabled = True;//Видима кнопка "Построить таблицу"
+   StringGrid2->RowCount= 0;
+   StringGrid2->ColCount = 0;
 }
 //-----------------------[Кнопка обработать массив]----------------------------------------------------
+//---------------------Алфьа------------------------------------------------------
 
-void __fastcall TForm1::Button4Click(TObject *Sender)
-{        
-/////////////////////////Заполнение шапки таблицы///////////////////////////////
-      StringGrid1->Cells[1][0] = "Mu";
-      StringGrid1->Cells[2][0] = "Alpha";
-////////////////////////////////////////////////////////////////////////////////
+void __fastcall TForm1::Button6Click(TObject *Sender)
+{
+ if (StringGrid2->RowCount == 0)
+ {
+   Series1->LinePen->Width = 1; Series1->SeriesColor = clRed;
+   Series1->Clear();
+
+        for( int i = 0; i < ADOTable1->RecordCount; i++)
+          {
+           Series1->AddXY(StrToFloat(StringGrid1->Cells[1][i+1]), StrToFloat(StringGrid1->Cells[2][i+1]));
+          }
+ }
+  else {ShowMessage("Нет расчетов Мю и Альфа");}
+}
+
+//---------------------[Построить таблицу]--------------------------------------
+  int iSchetchik = 0;//Счетчик нажатия на кнопку [Построить таблицу]
+void __fastcall TForm1::Button7Click(TObject *Sender)
+{
+ if (ComboBox1->Text!="")//Проверка открытия БД
+ {
+  iSchetchik++;
+                           //Строим структуру, столбцы и строки
+  int iKolField = ListBox2->Items->Count;//Получаем колличество столбцев в принимаемом списке
+  int  iKolRecord =  ADOTable1->RecordCount;//Получаем колличество строк  в созд. таблице
+  StringGrid2->RowCount = StringGrid2->RowCount+(iKolRecord-1);
+  StringGrid2->ColCount = StringGrid2->ColCount+(iKolField-1);
+
+  if ( iSchetchik == 1)
+  {Button7->Enabled = False;}
+
+   /////////////////////Заполнение таблицы///////////////////////////////
+ ADOTable1->First();
+ StringGrid2->Cells[0][0] = ADOTable1->RecordCount;
+
+
+ //while (!ADOTable1->Eof)     ListBox2->Items->Count   ADOTable1->RecordCount
+ for (int j=0; j<ListBox2->Items->Count; j++)
+  {  ADOTable1->First();
+   for (int i=0; i<ADOTable1->RecordCount; i++)
+      {
+        StringGrid2->Cells[j+1][0] = ListBox2->Items->Strings[j];
+        StringGrid2->Cells[j+1][i+1] = ADOTable1->FieldByName(ListBox2->Items->Strings[j])->AsString;
+        ADOTable1->Next();
+      }
+  }
+ }
+  else {ShowMessage("БД не открыта или не выбрана таблица!");}
+}
+
+//---------------------------------[Очистка таблицы]------------------------------------------
+void __fastcall TForm1::Button8Click(TObject *Sender)
+{
+   for (int i = 0; i < StringGrid2->ColCount; i++)
+   {
+    for (int j = 0; j < StringGrid2->RowCount; j++)
+    {
+      StringGrid2->Cells[i][j] = "";
+      iSchetchik = 0;
+      Button7->Enabled = True;
+    }
+   }
+   StringGrid2->RowCount= 0;
+   StringGrid2->ColCount = 0;
+}
+
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Edit2KeyPress(TObject *Sender, char &Key)
+{
+ if((Key!=VK_BACK)&&(Key<'0'||Key>'9')&&(Key!=','))Key=0;// Обработчик ввода эпсилон
+}
+
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::BitBtn1Click(TObject *Sender)
+{
+  //ListBox2->Items->Clear();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::Button3Click(TObject *Sender)
+{
+ if (ComboBox1->Text!="")//Проверка открытия БД
+ {
      int g=1;
      ADOTable1->First();
      while (!ADOTable1->Eof)
      {
-      for (int j = 0; j < ADOTable1->FieldCount; j++)
+      for (int j = 0; j < ADOTable1->FieldCount; j++) //Заполнение шапки тадлицы расчетов
          StringGrid1->Cells[0][g] = ADOTable1->Fields->Fields[0]->AsFloat;
        ADOTable1->Next();
        g++;
      };
-////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
-  double Mu=0;    //Альфа=arccos(k/Q); k = вектор(h0)*вектор(hi), Q = sqrt(Mu0*Mi).
+  double Mu=0;
   int i=1;
   ADOTable1->First();
   double *MuArray = new double [ADOTable1->RecordCount]; //массив значений Мю
@@ -213,11 +308,9 @@ void __fastcall TForm1::Button4Click(TObject *Sender)
          StringGrid1->Cells[1][i] = Mu; //Вывод Мю в таблицу
          ADOTable1->Next();
          i++;
-  };
-
-
-
-  double k=0; // Al=0, Q=0;//Альфа=arccos(k/Q); k = (h0)*(hi), Q = (Mu0*Mi)^2.
+  }
+  
+  double k=0; //Альфа=arccos(k/Q); k = (h0)*(hi), Q = (Mu0*Mi)^2.
 
 ////////Одномерный динамический массив, содержит 1-ю строку ADOTable1///////////
   double *MoArray = new double [ADOTable1->FieldCount]; //массив Мю нулевого
@@ -228,7 +321,7 @@ void __fastcall TForm1::Button4Click(TObject *Sender)
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-////k = (h0)*(hi); Умножаем 1строчный массив на ячейки ADOTable1////
+     ////k = (h0)*(hi); Умножаем 1строчный массив на ячейки ADOTable1////
   int f=0;
   double *AlArray = new double [ADOTable1->RecordCount]; //массив значений альфа
   ADOTable1->First();
@@ -239,108 +332,35 @@ void __fastcall TForm1::Button4Click(TObject *Sender)
        {
           k += MoArray[j-1] * ADOTable1->Fields->Fields[j]->AsFloat;
        }
-      AlArray[f] = k;
+      AlArray[f] = acos(k/(MuArray[0]*MuArray[f]));
       StringGrid1->Cells[2][f+1] = FloatToStr(acos(k/(MuArray[0]*MuArray[f])));
-      //StringGrid1->Cells[2][f+1] = FloatToStr(acos(k/(StrToFloat(StringGrid1->Cells[1][1])*StrToFloat(StringGrid1->Cells[1][f+1]))));
+      //StringGrid1->Cells[3][f+1] = k; //FloatToStr(acos(k/(StrToFloat(StringGrid1->Cells[1][1])*StrToFloat(StringGrid1->Cells[1][f+1]))));
+      //StringGrid1->Cells[4][f+1] =(MuArray[0]*MuArray[f]);
       ADOTable1->Next();
       f++;
-  };
-////////////////////////////////////////////////////////////////////////////////
-     /////////////////////////Освобождаем память///////////////////////////////////
+  }
+//////////////////////////Epsilon///////////////////////////////////////////////
+double E=0.005;
+if(Edit2->Text!="")
+E=StrToFloat(Edit2->Text);
+else E=0,005;
+//////////////////////////////Mu+///////////////////////////////////////////////
+for(int i=0; i<ADOTable1->RecordCount; i++)
+   {
+    StringGrid1->Cells[3][i+1] = MuArray[i] + E; //Mu+
+    StringGrid1->Cells[4][i+1] = MuArray[i] - E; //Mu-
+    StringGrid1->Cells[5][i+1] = MuArray[i] + E; //Alpha+
+    StringGrid1->Cells[6][i+1] = MuArray[i] - E; //Alpha-
+   }
+
+/////////////////////////Освобождаем память/////////////////////////////////////
    delete [] MoArray;
    delete [] MuArray;
    delete [] AlArray;
-   //delete [] Qarray;
-}
-
-//---------------------Алфьа------------------------------------------------------
-void __fastcall TForm1::Button5Click(TObject *Sender)
-{
-
-
-
-///////////////////Получаем Альфа///////////////////////////////////////////////
-          // for (int i=0; i<ADOTable1->RecordCount; i++)
-           {
-           // StringGrid1->Cells[2][i+1] = acos(karray[i]/Qarray[i]);
-           }
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TForm1::Button6Click(TObject *Sender)
-{
-   Series1->LinePen->Width = 5; Series1->SeriesColor = clRed;
-   Series1->Clear();
-
-        for( int i = 0; i < ADOTable1->RecordCount; i++)
-          {
-           // Series1->AddXY(StrToFloat(StringGrid1->Cells[1][i]), StrToFloat(StringGrid1->Cells[2][i]));
-          }
-
+ }
+   else
+        {ShowMessage("БД не открыта!");}
 }
 //---------------------------------------------------------------------------
 
 
-
-
-  int iSchetchik = 0;//Счетчик нажатия на кнопку [Построить таблицу]
-void __fastcall TForm1::Button7Click(TObject *Sender)
-{
-  iSchetchik++;
-                           //Строим структуру, столбцы и строки
-  int iKolRecord = ListBox2->Items->Count;//Получаем колличество строк в принимаемом списке
-  int iKolField =  ADOTable1->FieldCount;//Получаем колличество столбцев в созд. таблице
-  StringGrid2->RowCount=StringGrid2->RowCount+(iKolRecord-1);
-  StringGrid2->ColCount = StringGrid2->ColCount+(iKolField-2);
-
-  if ( iSchetchik == 1)
-  {
-    Button7->Enabled = False;
-  }
-    int iAR = ADOTable1->RecordCount; //Колличество строк в ADOTable1
-
-
-    for (int i=0; i<iAR; i++)
-    {   int j=0;
-     //Edit2->Text = ListBox2->Items->Strings[ListBox2->ItemIndex[i]];
-         //while (ListBox2->Items->Strings[ListBox2->ItemIndex] == ADOTable1->Fields->Fields[i])
-        {
-         //   StringGrid1->Cells[i][j] = ADOTable1->Fields[0][iAR]
-        }
-        j++;
-    }
-  //
-   //for (int j=0; j<iKolRecord; j++)
-   {
-   // if (ListBox2->Items[i] == ADOTable1->Fields[0][iAR])
-     {
-    //StringGrid1->Cells[i][j] = ADOTable1->Fields[0][iAR];
-     }
-
-   }
-
-
-
-
-}
-//---------------------------------[Очистка таблицы]------------------------------------------
-
-void __fastcall TForm1::Button8Click(TObject *Sender)
-{
-   for (int i = 0; i < StringGrid2->ColCount; i++)
-   {
-    for (int j = 0; j < StringGrid2->RowCount; j++)
-    {
-      StringGrid2->Cells[i][j] = "";
-      iSchetchik = 0;
-      Button7->Enabled = True;
-    }
-   }
-   StringGrid2->RowCount= 0;
-   StringGrid2->ColCount = 0;
-}
-//---------------------------------------------------------------------------
