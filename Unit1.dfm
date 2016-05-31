@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 283
-  Top = 133
+  Left = 227
+  Top = 229
   Width = 1175
   Height = 609
   Caption = 'Form1'
@@ -35,7 +35,7 @@ object Form1: TForm1
       end
       object Image1: TImage
         Left = 744
-        Top = 84
+        Top = 4
         Width = 399
         Height = 237
         Center = True
@@ -47,6 +47,13 @@ object Form1: TForm1
         Width = 66
         Height = 13
         Caption = #1054#1090#1082#1088#1099#1090#1072' '#1041#1044':'
+      end
+      object Label4: TLabel
+        Left = 576
+        Top = 32
+        Width = 37
+        Height = 13
+        Caption = 'Epsilon:'
       end
       object Button1: TButton
         Left = 8
@@ -69,7 +76,7 @@ object Form1: TForm1
         Top = 56
         Width = 145
         Height = 21
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 2
       end
       object Button2: TButton
@@ -94,16 +101,68 @@ object Form1: TForm1
         TitleFont.Name = 'MS Sans Serif'
         TitleFont.Style = []
       end
+      object StringGrid1: TStringGrid
+        Left = 744
+        Top = 248
+        Width = 393
+        Height = 233
+        ColCount = 7
+        RowCount = 16
+        TabOrder = 5
+        ColWidths = (
+          64
+          78
+          72
+          64
+          64
+          64
+          64)
+        RowHeights = (
+          24
+          24
+          24
+          24
+          27
+          24
+          24
+          24
+          24
+          24
+          24
+          24
+          24
+          24
+          24
+          24)
+      end
+      object Edit2: TEdit
+        Left = 616
+        Top = 24
+        Width = 121
+        Height = 21
+        TabOrder = 6
+        Text = '0,005'
+        OnKeyPress = Edit2KeyPress
+      end
+      object Button3: TButton
+        Left = 624
+        Top = 56
+        Width = 75
+        Height = 25
+        Caption = #1056#1072#1089#1095#1077#1090
+        TabOrder = 7
+        OnClick = Button3Click
+      end
     end
     object TabSheet2: TTabSheet
       Caption = 'Level 2'
       ImageIndex = 1
-      object Label4: TLabel
-        Left = 664
-        Top = 40
-        Width = 37
+      object Label3: TLabel
+        Left = 832
+        Top = 8
+        Width = 104
         Height = 13
-        Caption = 'Epsilon:'
+        Caption = #1060#1072#1079#1086#1074#1099#1077' '#1074#1077#1083#1080#1095#1080#1085#1099':'
       end
       object ListBox2: TListBox
         Left = 136
@@ -145,40 +204,6 @@ object Form1: TForm1
         Caption = #1057#1087#1080#1089#1086#1082' '#1084#1072#1088#1086#1082':'
         TabOrder = 3
       end
-      object StringGrid1: TStringGrid
-        Left = 664
-        Top = 64
-        Width = 481
-        Height = 409
-        ColCount = 7
-        RowCount = 16
-        TabOrder = 4
-        ColWidths = (
-          64
-          78
-          72
-          64
-          64
-          64
-          64)
-        RowHeights = (
-          24
-          24
-          24
-          24
-          27
-          24
-          24
-          24
-          24
-          24
-          24
-          24
-          24
-          24
-          24
-          24)
-      end
       object StringGrid2: TStringGrid
         Left = 272
         Top = 24
@@ -186,7 +211,7 @@ object Form1: TForm1
         Height = 273
         ColCount = 2
         RowCount = 2
-        TabOrder = 5
+        TabOrder = 4
         RowHeights = (
           24
           24)
@@ -197,7 +222,7 @@ object Form1: TForm1
         Width = 113
         Height = 25
         Caption = #1055#1086#1089#1090#1088#1086#1080#1090#1100' '#1090#1072#1073#1083#1080#1094#1091
-        TabOrder = 6
+        TabOrder = 5
         OnClick = Button7Click
       end
       object Button8: TButton
@@ -206,24 +231,15 @@ object Form1: TForm1
         Width = 113
         Height = 25
         Caption = #1054#1095#1080#1089#1090#1080#1090#1100' '#1090#1072#1073#1083#1080#1094#1091
-        TabOrder = 7
+        TabOrder = 6
         OnClick = Button8Click
-      end
-      object Edit2: TEdit
-        Left = 704
-        Top = 32
-        Width = 121
-        Height = 21
-        TabOrder = 8
-        Text = '0,005'
-        OnKeyPress = Edit2KeyPress
       end
       object BitBtn1: TBitBtn
         Left = 80
         Top = 304
         Width = 50
         Height = 25
-        TabOrder = 9
+        TabOrder = 7
         OnClick = BitBtn1Click
         Glyph.Data = {
           E6040000424DE604000000000000360000002800000014000000140000000100
@@ -272,7 +288,8 @@ object Form1: TForm1
         Top = 304
         Width = 50
         Height = 25
-        TabOrder = 10
+        TabOrder = 8
+        OnClick = BitBtn2Click
         Glyph.Data = {
           E6040000424DE604000000000000360000002800000014000000140000000100
           180000000000B0040000C40E0000C40E00000000000000000000FFFFFFFFFFFF
@@ -315,14 +332,39 @@ object Form1: TForm1
           BBBBBB7F7F7F3232320606060606063232327F7F7FBBBBBBF1F1F1FFFFFFFFFF
           FFFDFDFDFDFDFDFFFFFF}
       end
-      object Button3: TButton
-        Left = 880
-        Top = 32
+      object StringGrid3: TStringGrid
+        Left = 664
+        Top = 24
+        Width = 465
+        Height = 273
+        ColCount = 7
+        TabOrder = 9
+      end
+      object Button4: TButton
+        Left = 824
+        Top = 304
+        Width = 137
+        Height = 25
+        Caption = #1056#1072#1089#1095#1077#1090' '#1074#1090#1086#1088#1086#1075#1086' '#1091#1088#1074#1086#1085#1103' '
+        TabOrder = 10
+        OnClick = Button4Click
+      end
+      object Edit3: TEdit
+        Left = 224
+        Top = 384
+        Width = 121
+        Height = 21
+        TabOrder = 11
+        Text = 'Edit3'
+      end
+      object Button5: TButton
+        Left = 368
+        Top = 384
         Width = 75
         Height = 25
-        Caption = #1056#1072#1089#1095#1077#1090
-        TabOrder = 11
-        OnClick = Button3Click
+        Caption = 'Button5'
+        TabOrder = 12
+        OnClick = Button5Click
       end
     end
     object TabSheet3: TTabSheet
