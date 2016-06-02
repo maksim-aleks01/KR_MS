@@ -28,7 +28,7 @@ void __fastcall TForm1::Button2Click(TObject *Sender)
          ADOTable1->TableName=ComboBox1->Text;
          ADOTable1->Active=true;
 
-         if (ListBox1->Items != 0) ListBox1->Items->Clear();//Что бы не переполнялся ListBox1
+         if (ListBox1->Items != 0 && ListBox2->Items != 0) ListBox1->Items->Clear();//Что бы не переполнялся ListBox1
 
          StatusBar1->Panels->Items[1]->Text = "Строк: " + FloatToStr(ADOTable1->RecordCount); //Пишем кол-во стобцев и строк
          StatusBar1->Panels->Items[2]->Text = "Столбцев: " + FloatToStr(ADOTable1->FieldCount);
@@ -187,6 +187,9 @@ void __fastcall TForm1::CloseDB1Click(TObject *Sender)
    Button7->Enabled = True;//Видима кнопка "Построить таблицу"
    StringGrid2->RowCount= 0;
    StringGrid2->ColCount = 0;
+
+   StringGrid3->RowCount= 0;
+   StringGrid3->ColCount = 0;
 }
 
 //-----------------------[Построить график]-----------------------------
@@ -211,33 +214,28 @@ void __fastcall TForm1::Button7Click(TObject *Sender)
 {
  if (ComboBox1->Text!="")//Проверка открытия БД
  {
-  iSchetchik++;;
+  iSchetchik++;
+  if ( iSchetchik == 1)
+  {Button7->Enabled = False;}//Скрываем кнопку после нажатия
+
+                             //Строим структуру, столбцы и строки
+  StringGrid2->RowCount = ADOTable1->RecordCount+1; //Получаем колличество строк  в созд. таблице
+  StringGrid2->ColCount = ListBox2->Items->Count+1; //Получаем колличество столбцев в принимаемом списке
 
   //////////////////Заполняем столбец с Эпохами/////////////////////////////////
    int g=1;
      ADOTable1->First();
      while (!ADOTable1->Eof)
      {
-      for (int j = 0; j < ADOTable1->FieldCount; j++) //Заполнение шапки тадлицы расчетов
+      for (int j = 0; j < ADOTable1->FieldCount; j++)
          StringGrid2->Cells[0][g] = ADOTable1->Fields->Fields[0]->AsFloat;
        ADOTable1->Next();
        g++;
      };
   //////////////////////////////////////////////////////////////////////////////
 
-                           //Строим структуру, столбцы и строки
-  int iKolField = ListBox2->Items->Count;//Получаем колличество столбцев в принимаемом списке
-  int  iKolRecord =  ADOTable1->RecordCount;//Получаем колличество строк  в созд. таблице
-  StringGrid2->RowCount = StringGrid2->RowCount+(iKolRecord-1);
-  StringGrid2->ColCount = StringGrid2->ColCount+(iKolField-1);
-
-  if ( iSchetchik == 1)
-  {Button7->Enabled = False;}
-
-   /////////////////////Заполнение таблицы///////////////////////////////
- ADOTable1->First();
- 
- //while (!ADOTable1->Eof)     ListBox2->Items->Count   ADOTable1->RecordCount
+   /////////////////////Заполнение таблицы данными///////////////////////////////
+ StringGrid2->Cells[0][0] = ADOTable1->FieldList->Strings[0];//Имя нулевой ячейки
  for (int j=0; j<ListBox2->Items->Count; j++)
   {  ADOTable1->First();
    for (int i=0; i<ADOTable1->RecordCount; i++)
@@ -386,6 +384,8 @@ void __fastcall TForm1::Button4Click(TObject *Sender)
 {
 if (ComboBox1->Text!="")//Проверка открытия БД
  {
+ StringGrid3->RowCount = StringGrid2->RowCount+1;  //Строим структуру, строки
+ StringGrid3->Cells[0][0] = StringGrid2->Cells[0][0];//Имя нулевой ячейки
  /////////////////Заполнение эпох таблицы расчетов 2-го уровня/////////////////
      int g=1;
      ADOTable1->First();
@@ -393,12 +393,11 @@ if (ComboBox1->Text!="")//Проверка открытия БД
      {
       for (int j = 0; j < ADOTable1->FieldCount; j++)
          StringGrid3->Cells[0][g] = ADOTable1->Fields->Fields[0]->AsFloat;
-       ADOTable1->Next();
-       g++;
-     };
+         ADOTable1->Next();
+         g++;
+     }
 ////////////////////////////////////////////////////////////////////////////////
 
-  StringGrid3->RowCount = StringGrid2->RowCount;  //Строим структуру, строки
   StringGrid3->Cells[1][0] = "Mu";
   StringGrid3->Cells[2][0] = "Alpha";
   StringGrid3->Cells[3][0] = "Mu+";
@@ -406,49 +405,57 @@ if (ComboBox1->Text!="")//Проверка открытия БД
   StringGrid3->Cells[5][0] = "Alpha+";
   StringGrid3->Cells[6][0] = "Alpha-";
 
-            //Расчет МЮ
+             ////////Расчет Мю////////
   double Mu=0;
-  double *MuArray = new double [StringGrid2->RowCount-1]; //массив значений Мю
-  for (int i=1; i < StringGrid2->RowCount-1; i++)
+  double *MuArray = new double [ADOTable1->RecordCount]; //массив значений Мю
+  for (int i=1; i<ADOTable1->RecordCount+1; i++)
   {
         Mu =0;
-        for (int j = 1; j < StringGrid2->ColCount-1; j++)
-        {              ////////Расчет Мю  ////////
+        for (int j = 1; j < StringGrid2->ColCount; j++)
+        {
           Mu += pow(StrToFloat(StringGrid2->Cells[j][i]),2);//Сумма квадратов строки
         }
          Mu = sqrt(Mu);//Извлекаем мю из под знака корня
-         MuArray[i-1] = Mu;
          StringGrid3->Cells[1][i] = Mu; //Вывод Мю в таблицу
+         MuArray[i-1] = Mu;
   }
    ////////////////END МЮ/////////////////
 
-                 //Расчет Алфьа
-  //Альфа=arccos(k/Q); k = (h0)*(hi), Q = (Mu0*Mi)^2.
+               //Расчет Алфьа									
+  //Альфа=arccos(k/Q); k = (h0)*(hi), Q = (MuArray[0]*MuArray[f])
 
-  //////Одномерный динамический массив, содержит 1-ю строку StringGrid2///////////
-  double *MoArray = new double [StringGrid2->ColCount-1]; //массив Мю нулевого
-  for (int i=1; i<StringGrid2->ColCount-1; i++)
+  //////Одномерный динамический массив, содержит 1-ю строку StringGrid2///////////   
+  double *Str0Array = new double [StringGrid2->ColCount-1]; //массив нулевой строки
+  for (int i=1; i<StringGrid2->ColCount; i++)
     {
-       MoArray[i-1] = StrToFloat(StringGrid2->Cells[1][i]);
+       Str0Array[i-1] = StrToFloat(StringGrid2->Cells[i][1]);
     }
 ////////////////////////////////////////////////////////////////////////////////
 
      ////k = (h0)*(hi); Умножаем 1строчный массив на ячейки ADOTable1////
   double k=0;
   double *AlArray = new double [StringGrid2->ColCount-1]; //массив значений альфа
+  for (int i=0; i<StringGrid2->ColCount-1; i++) AlArray[i] = 0; // обнуляем массив
   for(int f=0; f<StringGrid2->RowCount-1; f++)
   {
     k=0;
-       for (int j=1; j<StringGrid2->ColCount-1; j++)
+       for (int j=1; j<StringGrid2->ColCount; j++)
        {
-          k += MoArray[j-1] * StrToFloat(StringGrid2->Cells[j][f+1]);
+          k += Str0Array[j-1] * StrToFloat(StringGrid2->Cells[j][f+1]);
+
        }
-      AlArray[f] = acos(k/(MuArray[0]*MuArray[f]));
-      StringGrid3->Cells[2][f+1] = FloatToStr(acos(k/(MuArray[0]*MuArray[f])));//Вывод ALpha в таблицу
+      double dProverka = k/(MuArray[0]*MuArray[f]);
+      if (dProverka > 1) dProverka = 1;
+      else
+      AlArray[f] = acos(dProverka); //
+      StringGrid3->Cells[2][f+1] = FloatToStr(AlArray[f]);//Вывод ALpha в таблицу
   }
     ///END Альфа///
 
-
+    /////////////////////Освобождаем память///////////////////////////////////////
+   delete [] MuArray;
+   delete [] Str0Array;
+   delete [] AlArray;
  }
    else
         {ShowMessage("БД не открыта!");}
@@ -456,9 +463,6 @@ if (ComboBox1->Text!="")//Проверка открытия БД
 //---------------------------------------------------------------------------
 
 
-void __fastcall TForm1::Button5Click(TObject *Sender)
-{
-  Edit3->Text = StringGrid2->RowCount;
-}
-//---------------------------------------------------------------------------
+
+
 

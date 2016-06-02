@@ -72,14 +72,12 @@ __published:	// IDE-managed Components
         TBitBtn *BitBtn2;
         TLabel *Label2;
         TStringGrid *StringGrid1;
-        TEdit *Edit2;
-        TLabel *Label4;
-        TButton *Button3;
         TStringGrid *StringGrid3;
         TButton *Button4;
         TLabel *Label3;
-        TEdit *Edit3;
-        TButton *Button5;
+        TEdit *Edit2;
+        TLabel *Label4;
+        TButton *Button3;
         void __fastcall Button2Click(TObject *Sender);
         void __fastcall Button1Click(TObject *Sender);
         void __fastcall ListBox2DragOver(TObject *Sender, TObject *Source,
@@ -97,7 +95,6 @@ __published:	// IDE-managed Components
         void __fastcall Button3Click(TObject *Sender);
         void __fastcall BitBtn2Click(TObject *Sender);
         void __fastcall Button4Click(TObject *Sender);
-        void __fastcall Button5Click(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
         __fastcall TForm1(TComponent* Owner);

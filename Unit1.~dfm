@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 227
-  Top = 229
-  Width = 1175
+  Left = 280
+  Top = 179
+  Width = 1144
   Height = 609
   Caption = 'Form1'
   Color = clBtnFace
@@ -17,10 +17,10 @@ object Form1: TForm1
   object PageControl1: TPageControl
     Left = 0
     Top = 0
-    Width = 1153
-    Height = 521
-    ActivePage = TabSheet2
-    TabIndex = 1
+    Width = 1121
+    Height = 529
+    ActivePage = TabSheet1
+    TabIndex = 0
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'Level 1'
@@ -48,13 +48,6 @@ object Form1: TForm1
         Height = 13
         Caption = #1054#1090#1082#1088#1099#1090#1072' '#1041#1044':'
       end
-      object Label4: TLabel
-        Left = 576
-        Top = 32
-        Width = 37
-        Height = 13
-        Caption = 'Epsilon:'
-      end
       object Button1: TButton
         Left = 8
         Top = 16
@@ -78,6 +71,7 @@ object Form1: TForm1
         Height = 21
         ItemHeight = 13
         TabOrder = 2
+        Text = 'XX'
       end
       object Button2: TButton
         Left = 224
@@ -135,22 +129,13 @@ object Form1: TForm1
           24
           24)
       end
-      object Edit2: TEdit
-        Left = 616
-        Top = 24
-        Width = 121
-        Height = 21
-        TabOrder = 6
-        Text = '0,005'
-        OnKeyPress = Edit2KeyPress
-      end
       object Button3: TButton
-        Left = 624
+        Left = 664
         Top = 56
         Width = 75
         Height = 25
         Caption = #1056#1072#1089#1095#1077#1090
-        TabOrder = 7
+        TabOrder = 6
         OnClick = Button3Click
       end
     end
@@ -163,6 +148,13 @@ object Form1: TForm1
         Width = 104
         Height = 13
         Caption = #1060#1072#1079#1086#1074#1099#1077' '#1074#1077#1083#1080#1095#1080#1085#1099':'
+      end
+      object Label4: TLabel
+        Left = 288
+        Top = 8
+        Width = 37
+        Height = 13
+        Caption = 'Epsilon:'
       end
       object ListBox2: TListBox
         Left = 136
@@ -217,7 +209,7 @@ object Form1: TForm1
           24)
       end
       object Button7: TButton
-        Left = 336
+        Left = 312
         Top = 304
         Width = 113
         Height = 25
@@ -226,7 +218,7 @@ object Form1: TForm1
         OnClick = Button7Click
       end
       object Button8: TButton
-        Left = 464
+        Left = 440
         Top = 304
         Width = 113
         Height = 25
@@ -335,10 +327,19 @@ object Form1: TForm1
       object StringGrid3: TStringGrid
         Left = 664
         Top = 24
-        Width = 465
+        Width = 441
         Height = 273
         ColCount = 7
+        RowCount = 2
         TabOrder = 9
+        ColWidths = (
+          64
+          64
+          65
+          64
+          54
+          58
+          58)
       end
       object Button4: TButton
         Left = 824
@@ -349,22 +350,14 @@ object Form1: TForm1
         TabOrder = 10
         OnClick = Button4Click
       end
-      object Edit3: TEdit
-        Left = 224
-        Top = 384
+      object Edit2: TEdit
+        Left = 328
+        Top = 0
         Width = 121
         Height = 21
         TabOrder = 11
-        Text = 'Edit3'
-      end
-      object Button5: TButton
-        Left = 368
-        Top = 384
-        Width = 75
-        Height = 25
-        Caption = 'Button5'
-        TabOrder = 12
-        OnClick = Button5Click
+        Text = '0,005'
+        OnKeyPress = Edit2KeyPress
       end
     end
     object TabSheet3: TTabSheet
@@ -413,7 +406,7 @@ object Form1: TForm1
   object StatusBar1: TStatusBar
     Left = 0
     Top = 530
-    Width = 1159
+    Width = 1128
     Height = 20
     Panels = <
       item
