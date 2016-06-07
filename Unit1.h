@@ -29,6 +29,7 @@
 #include <TeeProcs.hpp>
 #include <Series.hpp>
 #include <Buttons.hpp>
+#include <ArrowCha.hpp>
 //---------------------------------------------------------------------------
 class TForm1 : public TForm
 {
@@ -61,9 +62,7 @@ __published:	// IDE-managed Components
         TStaticText *StaticText1;
         TStatusBar *StatusBar1;
         TTabSheet *TabSheet3;
-        TDBChart *DBChart1;
-        TLineSeries *Series1;
-        TButton *Button6;
+        TDBChart *Chart1;
         TStringGrid *StringGrid2;
         TButton *Button7;
         TButton *Button8;
@@ -78,6 +77,28 @@ __published:	// IDE-managed Components
         TEdit *Edit2;
         TLabel *Label4;
         TButton *Button3;
+        TArrowSeries *Series1;
+        TGroupBox *GroupBox1;
+        TCheckBox *CheckBox1;
+        TCheckBox *CheckBox2;
+        TCheckBox *CheckBox3;
+        TCheckBox *CheckBox4;
+        TButton *Button6;
+        TEdit *Edit3;
+        TLabel *Label5;
+        TTabSheet *TabSheet4;
+        TComboBox *ComboBox2;
+        TChart *Chart2;
+        TArrowSeries *Series2;
+        TArrowSeries *Series3;
+        TArrowSeries *Series4;
+        TPointSeries *Series5;
+        TPointSeries *Series6;
+        TPointSeries *Series7;
+        TPointSeries *Series8;
+        TArrowSeries *Series9;
+        TPointSeries *Series10;
+        TEdit *Edit4;
         void __fastcall Button2Click(TObject *Sender);
         void __fastcall Button1Click(TObject *Sender);
         void __fastcall ListBox2DragOver(TObject *Sender, TObject *Source,
@@ -95,6 +116,9 @@ __published:	// IDE-managed Components
         void __fastcall Button3Click(TObject *Sender);
         void __fastcall BitBtn2Click(TObject *Sender);
         void __fastcall Button4Click(TObject *Sender);
+        void __fastcall ComboBox2Change(TObject *Sender);
+        void __fastcall Edit3KeyPress(TObject *Sender, char &Key);
+        void __fastcall CheckBox4Click(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
         __fastcall TForm1(TComponent* Owner);
