@@ -19,11 +19,12 @@ AnsiString s1= "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=";
 AnsiString s2 = ";Persist Security Info=False";
 AnsiString ConStr;
 
+
 //----------------------------------[Показать таблицу]--------------------------  
 void __fastcall TForm1::Button2Click(TObject *Sender)
 {
    if (ADOTable1->Active==true) ADOTable1->Active=false;
-        if (ComboBox1->Text!="")
+        if (ComboBox1->Text!="" && Edit1->Text!="")
         {
          ADOTable1->TableName=ComboBox1->Text;
          ADOTable1->Active=true;
@@ -31,13 +32,22 @@ void __fastcall TForm1::Button2Click(TObject *Sender)
          if (ListBox1->Items != 0) ListBox1->Items->Clear(); ListBox2->Items->Clear();//Что бы не переполнялся ListBox1
 
          StatusBar1->Panels->Items[1]->Text = "Строк: " + FloatToStr(ADOTable1->RecordCount); //Пишем кол-во стобцев и строк
-         StatusBar1->Panels->Items[2]->Text = "Столбцев: " + FloatToStr(ADOTable1->FieldCount);
+         StatusBar1->Panels->Items[2]->Text = "Столбцев: " + (FloatToStr(ADOTable1->FieldCount)-1);
 
          for (int i=1;i<ADOTable1->FieldCount;i++)   //Заполняем марками Список "источник"
               {ListBox1->Items->Append(ADOTable1->FieldList->Strings[i]);}
+
+         ComboBox2->Clear();
+         for (int i=1;i<ADOTable1->FieldCount;i++)   //Заполняем марками Список 4-го уровня
+             {
+              ComboBox2->Items->Append(ADOTable1->FieldList->Strings[i]);
+             }
         }
         else
-        {ShowMessage("Таблица не выбрана!");}
+        {
+         if (Edit1->Text=="")ShowMessage("БД не открыта!");
+         if (ComboBox1->Text=="")ShowMessage("Таблица не выбрана!");
+        }
 }
 
 //------------------[Кнопка открыть БД]-----------------------------------------
@@ -48,29 +58,20 @@ void __fastcall TForm1::Button1Click(TObject *Sender)
  if (ADOConnection1->Connected==true) ADOConnection1->Connected=false;
  if (ListBox1->Items != 0) ListBox1->Items->Clear();
  ComboBox1->Clear();
-
-
+ 
  if (OpenDialog1->FileName!="")
  {
-  Edit1->Text=OpenDialog1->FileName;
-  ConStr=s1+Edit1->Text+s2;
+  ComboBox1->Clear();
+  Edit1->Text=OpenDialog1->FileName;  // заносим путь БД
+  ConStr=s1+Edit1->Text+s2; //полный путь к БД
   ADOConnection1->ConnectionString=ConStr;
   ADOConnection1->Connected=true;
   ADOConnection1->GetTableNames(ComboBox1->Items);
   AnsiString Put="input.bmp";
-  Image1->Picture->LoadFromFile(Put);
+  Image1->Picture->LoadFromFile(Put);  
   AnsiString Path=OpenDialog1->FileName;
-  StatusBar1->Panels->Items[0]->Text="Путь" + Path;
-
-  /////////////////////////Заполнение шапки таблицы/////////////////////////////
-      StringGrid1->Cells[1][0] = "Mu";
-      StringGrid1->Cells[2][0] = "Alpha";
-      StringGrid1->Cells[3][0] = "Mu+";
-      StringGrid1->Cells[4][0] = "Mu-";
-      StringGrid1->Cells[5][0] = "Alpha+";
-      StringGrid1->Cells[6][0] = "Alpha-";
-  //////////////////////////////////////////////////////////////////////////////
-  }
+  StatusBar1->Panels->Items[0]->Text="Путь " + Path;
+ }
 }
 
 //------------------------------[DragOver]--------------------------------------
@@ -93,7 +94,8 @@ void __fastcall TForm1::ListBox2DragDrop(TObject *Sender, TObject *Source,
  TPoint p; //Объявляем класс для определения координат мыши
  p = Point(X,Y);//Положение курсора мыши
  int k = mDest ->ItemAtPos(p, true); //Определение индекса элемента списка получателя, на который указывает курсор мыши
-   if (mSrc->ItemIndex == mDest->ItemIndex && mSrc->Name == mDest->Name ) return; //Проверка на вложеность итемов друг в друга
+
+ if (mSrc->ItemIndex == mDest->ItemIndex && mSrc->Name == mDest->Name ) return;//Проверка на вложеность итемов друг в друга
 
  //Вставляем перемещенные элементы в список получатель
  //Положение перемещенного элемента будет определенно положением екрсора мыши
@@ -143,15 +145,6 @@ void __fastcall TForm1::Open1Click(TObject *Sender)
   {
     ListBox1->Items->Append(ADOTable1->FieldList->Strings[i]);
   }
-
-    /////////////////////Заполнение шапки таблицы///////////////////////////////
-      StringGrid1->Cells[1][0] = "Mu";
-      StringGrid1->Cells[2][0] = "Alpha";
-      StringGrid1->Cells[3][0] = "Mu+";
-      StringGrid1->Cells[4][0] = "Mu-";
-      StringGrid1->Cells[5][0] = "Alpha+";
-      StringGrid1->Cells[6][0] = "Alpha-";
-    ////////////////////////////////////////////////////////////////////////////
 }
 
 //----------------------[Кнопка МЕНЮ->закрыт БД]--------------------------------
@@ -173,85 +166,21 @@ void __fastcall TForm1::CloseDB1Click(TObject *Sender)
  ListBox1->Items->Clear();//Чистка 2го уровня drag&drop
  ListBox2->Items->Clear();
 
- for (int i = 0; i < StringGrid1->ColCount; i++) //Очистка таблицы расчетов
-   { for (int j = 0; j < StringGrid1->RowCount; j++)
-       { StringGrid1->Cells[i][j] = "";}
-   }
-   StringGrid2->RowCount= 0;
-   StringGrid2->ColCount = 0;
-
    for (int i = 0; i < StringGrid2->ColCount; i++) //Очистка таблицы 2-го уровня
    { for (int j = 0; j < StringGrid2->RowCount; j++)
        { StringGrid2->Cells[i][j] = "";}
    }
    Button7->Enabled = True;//Видима кнопка "Построить таблицу"
-   StringGrid2->RowCount= 0;
-   StringGrid2->ColCount = 0;
 
-   StringGrid3->RowCount= 0;
-   StringGrid3->ColCount = 0;
+   for (int i = 0; i < StringGrid3->ColCount; i++) //Очистка таблицы Расчетов 2-го уровня
+   { for (int j = 0; j < StringGrid3->RowCount; j++)
+       { StringGrid3->Cells[i][j] = "";}
+   }
 
    Edit2->Text = 0.005; //Дефолтное ззначение Эпсилон
 }
 
-//-----------------------[Построить график]-----------------------------
-void __fastcall TForm1::Button6Click(TObject *Sender)
-{
- if (StringGrid3->RowCount > 2)
- {
-  // Series1->LinePen->Width = 1; Series1->SeriesColor = clRed; Series1->Clear();
-        Series1->Clear();
-        Series2->Clear();
-        Series3->Clear();
-        Series4->Clear();
-        Series5->Clear();
-        Series6->Clear();
-        Series7->Clear();
-        Series8->Clear();
-
-        for( int i = 0; i < ADOTable1->RecordCount-1; i++)
-          {
-          //Отчерчиваем график Мю(Альфа)
-           double MuX = StrToFloat(StringGrid3->Cells[1][i+1]);
-           double AlY = StrToFloat(StringGrid3->Cells[2][i+1]);
-           double MuX1 = StrToFloat(StringGrid3->Cells[1][i+2]);
-           double AlY1 = StrToFloat(StringGrid3->Cells[2][i+2]);
-           Series1->AddArrow(MuX, AlY, MuX1, AlY1, StringGrid3->Cells[1][i+1], clRed); //Mu(Al)
-           Series5->AddXY(MuX, AlY, "Fuck" , clWhite);
-
-          //Отчерчиваем график Мю-(Альфа-)
-           double MuMinX = StrToFloat(StringGrid3->Cells[4][i+1]);
-           double AlMinY = StrToFloat(StringGrid3->Cells[6][i+1]);
-           double MuMinX1 = StrToFloat(StringGrid3->Cells[4][i+2]);
-           double AlMinY1 = StrToFloat(StringGrid3->Cells[6][i+2]);
-           Series2->AddArrow(MuMinX, AlMinY, MuMinX1, AlMinY1, "", clBlue); //StringGrid3->Cells[4][i+1]
-           Series6->AddXY(MuMinX, AlMinY, "Fuck" , clRed);
-
-            //Отчерчиваем график Мю+(Альфа+)
-           double MuMaxX = StrToFloat(StringGrid3->Cells[3][i+1]);
-           double AlMaxY = StrToFloat(StringGrid3->Cells[5][i+1]);
-           double MuMaxX1 = StrToFloat(StringGrid3->Cells[3][i+2]);
-           double AlMaxY1 = StrToFloat(StringGrid3->Cells[5][i+2]);
-           Series3->AddArrow(MuMaxX, AlMaxY, MuMaxX1, AlMaxY1, "", clGreen);
-           Series7->AddXY(MuMaxX, AlMaxY, "Fuck" , clBlack);
-
-
-            //Отчерчиваем график Мю-Прогнозное(Альфа-Прогнозное)
-           double MuPrX = StrToFloat(StringGrid3->Cells[7][i+1]);
-           double AlPrY = StrToFloat(StringGrid3->Cells[8][i+1]);
-           double MuPrX1 = StrToFloat(StringGrid3->Cells[7][i+2]);
-           double AlPrY1 = StrToFloat(StringGrid3->Cells[8][i+2]);
-           Series4->AddArrow(MuPrX, AlPrY, MuPrX1, AlPrY1, "", clYellow);
-           Series8->AddXY(MuPrX, AlPrY, "Fuck" , clLime);
-
-          // Series2->AddArrow(StrToFloat(StringGrid3->Cells[3][i]), StrToFloat(StringGrid3->Cells[5][i])); //Mu+(Al+)
-         //  Series3->AddArrow(StrToFloat(StringGrid3->Cells[4][i]), StrToFloat(StringGrid3->Cells[6][i]));  //Mu-(Al-)
-          }
- }
-  else {ShowMessage("Нет расчетов!");}
-}
-
-//---------------------[Построить таблицу]--------------------------------------
+//-----------------------[Построить график]-----------------------------//---------------------[Построить таблицу]--------------------------------------
   int iSchetchik = 0;//Счетчик нажатия на кнопку [Построить таблицу]
 void __fastcall TForm1::Button7Click(TObject *Sender)
 {
@@ -283,8 +212,8 @@ void __fastcall TForm1::Button7Click(TObject *Sender)
   {  ADOTable1->First();
    for (int i=0; i<ADOTable1->RecordCount; i++)
       {
-        StringGrid2->Cells[j+1][0] = ListBox2->Items->Strings[j];
-        StringGrid2->Cells[j+1][i+1] = ADOTable1->FieldByName(ListBox2->Items->Strings[j])->AsString;
+        StringGrid2->Cells[j+1][0] = ListBox2->Items->Strings[j];     // заполнение марок в шапке
+        StringGrid2->Cells[j+1][i+1] = ADOTable1->FieldByName(ListBox2->Items->Strings[j])->AsString; //заполнение отметок высот
         ADOTable1->Next();
       }
   }
@@ -306,10 +235,9 @@ void __fastcall TForm1::Button8Click(TObject *Sender)
        {
         StringGrid2->Cells[i][j] = "";
         iSchetchik = 0;
-        Button7->Enabled = True;
+        Button7->Enabled = True;  //активная кнопка Построить таблицу
        }
    }
-
 
    for (int i = 0; i < StringGrid3->ColCount; i++) // Очитска таблицы расчетов
    {
@@ -318,7 +246,6 @@ void __fastcall TForm1::Button8Click(TObject *Sender)
         StringGrid3->Cells[i][j] = "";
        }
    }
-
    Edit2->Text = 0.005; //Дефолтное ззначение Эпсилон
 }
 
@@ -348,101 +275,10 @@ void __fastcall TForm1::BitBtn2Click(TObject *Sender)
  ListBox1->Items->Clear();
 }
 
-//-------------------------[Кнопка Расчет]--------------------------------------
-void __fastcall TForm1::Button3Click(TObject *Sender)
-{
- if (ComboBox1->Text!="")//Проверка открытия БД
- {
-     int g=1;
-     ADOTable1->First();
-     while (!ADOTable1->Eof)
-     {
-      for (int j = 0; j < ADOTable1->FieldCount; j++) //Заполнение шапки тадлицы расчетов
-         StringGrid1->Cells[0][g] = ADOTable1->Fields->Fields[0]->AsFloat;
-       ADOTable1->Next();
-       g++;
-     };
-  //////////////////////////////////////////////////////////////////////////////
-                //Расчет Мю
-  double Mu=0;
-  int i=1;
-  ADOTable1->First();
-  double *MuArray = new double [ADOTable1->RecordCount]; //массив значений Мю
-  while (!ADOTable1->Eof)
-  {
-        Mu =0;
-        for (int j = 1; j < ADOTable1->FieldCount; j++)
-        {              ////////Расчет Мю  ////////
-          Mu += pow((ADOTable1->Fields->Fields[j]->AsFloat),2);//Сумма квадратов строки
-        }
-         Mu = sqrt(Mu);//Извлекаем мю из под знака корня
-         MuArray[i-1] = Mu;
-         StringGrid1->Cells[1][i] = Mu; //Вывод Мю в таблицу
-         ADOTable1->Next();
-         i++;
-  }
-               ///END Мю///
-
-   //Расчет Алфьа
-  double k=0; //Альфа=arccos(k/Q); k = (h0)*(hi), Q = (Mu0*Mi)^2.
-
-  //////Одномерный динамический массив, содержит 1-ю строку ADOTable1///////////
-  double *MoArray = new double [ADOTable1->FieldCount]; //массив Мю нулевого
-  ADOTable1->First();
-  for (int i=1; i<ADOTable1->FieldCount; i++)
-    {
-       MoArray[i-1] = ADOTable1->Fields->Fields[i]->AsFloat;
-    }
-////////////////////////////////////////////////////////////////////////////////
-
-     ////k = (h0)*(hi); Умножаем 1строчный массив на ячейки ADOTable1////
-  int f=0;
-  double *AlArray = new double [ADOTable1->RecordCount]; //массив значений альфа
-  ADOTable1->First();
-  while (!ADOTable1->Eof)
-  {
-    k=0;
-       for (int j=1; j<ADOTable1->FieldCount; j++)
-       {
-          k += MoArray[j-1] * ADOTable1->Fields->Fields[j]->AsFloat;
-       }
-      AlArray[f] = acos(k/(MuArray[0]*MuArray[f]));
-      StringGrid1->Cells[2][f+1] = FloatToStr(acos(k/(MuArray[0]*MuArray[f])));
-      //StringGrid1->Cells[3][f+1] = k; //FloatToStr(acos(k/(StrToFloat(StringGrid1->Cells[1][1])*StrToFloat(StringGrid1->Cells[1][f+1]))));
-      //StringGrid1->Cells[4][f+1] =(MuArray[0]*MuArray[f]);
-      ADOTable1->Next();
-      f++;
-  }
-    ///END Альфа///
-
-    //////////////////////Epsilon///////////////////////////////////////////////
- double E=0.005;
- if(Edit2->Text!="")
- E=StrToFloat(Edit2->Text);
- else E=0,005;
-
-     /////////////////////////Min\Max фазовых величин///////////////////////////
- for(int i=0; i<ADOTable1->RecordCount; i++)
-   {
-    StringGrid1->Cells[3][i+1] = MuArray[i] + E; //Mu+
-    StringGrid1->Cells[4][i+1] = MuArray[i] - E; //Mu-
-    StringGrid1->Cells[5][i+1] = AlArray[i] + E; //Alpha+
-    StringGrid1->Cells[6][i+1] = AlArray[i] - E; //Alpha-
-   }
-
-  /////////////////////Освобождаем память///////////////////////////////////////
-   delete [] MoArray;
-   delete [] MuArray;
-   delete [] AlArray;
- }
-   else
-        {ShowMessage("БД не открыта!");}
-}
-
-//-------------------------2-ой уровень [Расчет]-----------------------------------------------------
+//-------------------------[Кнопка Расчет]--------------------------------------//-------------------------2-ой уровень [Расчет]-----------------------------------------------------
 void __fastcall TForm1::Button4Click(TObject *Sender)
 {
-if (ComboBox1->Text!="" && StringGrid2->RowCount > 2 && StringGrid2->ColCount >= 2)//Проверка открытия БД
+                  if (ComboBox1->Text!="" && StringGrid2->RowCount > 2 && StringGrid2->ColCount >= 2)//Проверка открытия БД
  {
  StringGrid3->RowCount = StringGrid2->RowCount+1; //Строим структуру, строки
  StringGrid3->Cells[0][0] = StringGrid2->Cells[0][0]; //Имя нулевой ячейки
@@ -457,7 +293,7 @@ if (ComboBox1->Text!="" && StringGrid2->RowCount > 2 && StringGrid2->ColCount >=
          g++;
      }
 ////////////////////////////////////////////////////////////////////////////////
-
+                                           
   StringGrid3->Cells[1][0] = "Mu";
   StringGrid3->Cells[2][0] = "Alpha";
   StringGrid3->Cells[3][0] = "Mu+";
@@ -466,6 +302,7 @@ if (ComboBox1->Text!="" && StringGrid2->RowCount > 2 && StringGrid2->ColCount >=
   StringGrid3->Cells[6][0] = "Alpha-";
   StringGrid3->Cells[7][0] = "Прогноз Мю";
   StringGrid3->Cells[8][0] = "Прогноз Alpha";
+  StringGrid3->Cells[9][0] = "Устойчивость";
       //////////////////////Epsilon///////////////////////////////////////////////
  double E=0.005;
  if(Edit2->Text!="")
@@ -519,9 +356,9 @@ if (ComboBox1->Text!="" && StringGrid2->RowCount > 2 && StringGrid2->ColCount >=
   //Альфа=arccos(k/Q); k = (h0)*(hi), Q = (MuArray[0]*MuArray[f])
   //////Одномерный динамический массив, содержит 1-ю строку StringGrid2///////////
   //double *Str0Array = new double [StringGrid2->ColCount-1]; //массив нулевой строки
-  double Str0Array [100];
-  double MaxStr0Array [100];
-  double MinStr0Array [100];
+   double Str0Array [100];
+   float MaxStr0Array [100];
+   float MinStr0Array [100];
   double SumAl=0;
 
   for (int i=0; i<100; i++) //Обнуление массивов
@@ -533,7 +370,7 @@ if (ComboBox1->Text!="" && StringGrid2->RowCount > 2 && StringGrid2->ColCount >=
 
   for (int i=1; i<StringGrid2->ColCount; i++)  //Нулевы
     {
-       Str0Array[i-1] = StrToFloat(StringGrid2->Cells[i][1]);
+       Str0Array[i-1] = StrToFloat(StringGrid2->Cells[i][1]); //значенния нулевой строки
        MaxStr0Array[i-1] = (StrToFloat(StringGrid2->Cells[i][1]))+E;
        MinStr0Array[i-1] = (StrToFloat(StringGrid2->Cells[i][1]))-E;
     }
@@ -543,7 +380,7 @@ if (ComboBox1->Text!="" && StringGrid2->RowCount > 2 && StringGrid2->ColCount >=
   double k=0; double kMax=0; double kMin=0;
 
   //double *AlArray = new double [StringGrid2->ColCount-1]; //массив значений альфа
-  double AlArray [100]; double MaxAlArray [100]; double MinAlArray [100];
+  float AlArray [100]; double MaxAlArray [100]; double MinAlArray [100];
 
   //for (int i=0; i<StringGrid2->ColCount-1; i++) AlArray[i] = 0; // обнуляем массив
   for (int i=0; i<100; i++)
@@ -555,47 +392,47 @@ if (ComboBox1->Text!="" && StringGrid2->RowCount > 2 && StringGrid2->ColCount >=
 
   for(int f=0; f<StringGrid2->RowCount-1; f++)
   {
-    k=0; kMax=0; kMin=0;
+    k=0.0; kMax=0; kMin=0;
        for (int j=1; j<StringGrid2->ColCount; j++)
        {
-          k += Str0Array[j-1] * StrToFloat(StringGrid2->Cells[j][f+1]);
+          double dbTemp1 = Str0Array[j-1];
+          double dbTemp2 = StrToFloat(StringGrid2->Cells[j][f+1]);
+
+          k += dbTemp1 * dbTemp2; // перемножение элементов 1ой строки на элементы таблицы
+          double temp3 = k;
           kMax += MaxStr0Array[j-1] * ((StrToFloat(StringGrid2->Cells[j][f+1]))+E);
           kMin += MinStr0Array[j-1] * ((StrToFloat(StringGrid2->Cells[j][f+1]))-E);
        }
 
+
+      //double dProverka = k/(MuArray[0]*MuArray[f]);
       double dProverka = k/(MuArray[0]*MuArray[f]);
       double MaXdProverka = kMax/(MaxMuArray[0]*MaxMuArray[f]);
       double MiNdProverka = kMin/(MinMuArray[0]*MinMuArray[f]);
-      if (dProverka > 1 || MaXdProverka > 1 || MiNdProverka > 1)
-       {
-        dProverka = 1;
-        MaXdProverka = 1;
-        MiNdProverka = 1;
 
-        AlArray[f] = acos(dProverka);
-        MaxAlArray[f] = acos(MaXdProverka);
-        MinAlArray[f] = acos(MiNdProverka);
-       }
-      else
-       {
+      if (dProverka > 1 ) dProverka = 1;
+      if (MaXdProverka > 1 ) MaXdProverka = 1;
+      if (MiNdProverka > 1 ) MiNdProverka = 1;
+
+
+         //AlArray[f] = acos(dProverka) * 180.0 / M_PI;   //acos
          AlArray[f] = acos(dProverka);
          MaxAlArray[f] = acos(MaXdProverka);
          MinAlArray[f] = acos(MiNdProverka);
-       }
+
 
       SumAl += AlArray[f];
-      StringGrid3->Cells[2][f+1] = FloatToStr(AlArray[f]);//Вывод ALpha в таблицу
+      StringGrid3->Cells[2][f+1] = FloatToStrF(AlArray[f],ffFixed,9,7);//Вывод ALpha в таблицу
       StringGrid3->Cells[5][f+1] = FloatToStr(MaxAlArray[f]);//Вывод ALpha+ в таблицу
       StringGrid3->Cells[6][f+1] = FloatToStr(MinAlArray[f]);//Вывод ALpha- в таблицу
 
   }
     ///END Альфа///
 
-
     //////Расчет прогнрзного значения Мю //////
-     double MuPr0 = MuArray[0] * A +(1-A) * (SumMu/StrToFloat(ADOTable1->RecordCount)); //Расчет 0-го прогнрзного значения Мю
+     double MuPr0 = MuArray[0] * A +(1-A) * (SumMu/StrToFloat(ADOTable1->RecordCount)); //Расчет 0-го прогнрзного значения Мю, среднее значение
      StringGrid3->Cells[7][1] = MuPr0;
-     //Edit4->Text = MuPr0;
+
      double MuPrArray[100];
      for (int i=0; i<ADOTable1->RecordCount; i++)
         {
@@ -615,75 +452,40 @@ if (ComboBox1->Text!="" && StringGrid2->RowCount > 2 && StringGrid2->ColCount >=
         {
           AlPrArray[i] = AlArray[i+1] * A +(1-A) * AlPr0;
           StringGrid3->Cells[8][i+2] = AlPrArray[i];//Вывод Прогнозного Альфа в таблицу
-        }                             
-     double AlPrB = (SumAl/StrToFloat(ADOTable1->RecordCount)) * A +(1-A) * AlPrArray[ADOTable1->RecordCount]; //Альфа последнее
-     StringGrid3->Cells[8][ADOTable1->RecordCount] = AlPrB;
+        }
+     double AlPrB = SumAl-AlArray[0]/(StrToFloat(ADOTable1->RecordCount-1))*A+(1-A)*AlPrArray[ADOTable1->RecordCount-1];
+
+
+     StringGrid3->Cells[0][ADOTable1->RecordCount+1] = "Прогноз: ";
+     StringGrid3->Cells[8][ADOTable1->RecordCount+1] = AlPrB;
      //////END Альфа-pr//////
 
-
-    /////////////////////Освобождаем память///////////////////////////////////////
-   delete [] MuArray;
-   delete [] Str0Array;
-   delete [] AlArray;
+   //Проверка устойчивости системы
+  for(int i=0; i<ADOTable1->RecordCount; i++)
+     {
+      if(fabs(MinMuArray[i] - MaxMuArray[i])>=fabs(MuArray[i]-MuArray[0]))
+        { StringGrid3->Cells[9][i+1]=("+"); }
+      else
+ 	{ StringGrid3->Cells[9][i+1]=("-"); }
+     }
  }
    else {
     if (StringGrid2->RowCount <= 2 || StringGrid2->ColCount <= 2){ShowMessage("Таблица не собрана!");}
     if (ComboBox1->Text==""){ShowMessage("БД не открыта!");}
    }
-
 }
 //---------------------------------------------------------------------------
-
-
-
-
-
-
-void __fastcall TForm1::ComboBox2Change(TObject *Sender)
-{
-  if (OpenDialog1->FileName!="" && ComboBox1->Text!="" && ComboBox2->Text!="")
-  {
-        ADOTable1->First();
-        double M[100];
-
-        for (int i=0; i<ADOTable1->RecordCount; i++)
-           {
-             M[i]=ADOTable1->FieldByName(ComboBox2->Text)->AsFloat;
-             ADOTable1->Next();
-           }
-
-        Series9->Clear();
-        Series10->Clear();
-        for (int i=1; i<ADOTable1->RecordCount; i++)
-            {
-                Series9->AddArrow(i-1,M[i-1],i,M[i]);
-                Series10->AddXY(i-1,M[i-1],i,M[i]);
-             }
-        Chart2->Refresh();
-  }
-
- else
-     {
-        if (OpenDialog1->FileName=="" && ComboBox1->Text=="")
-        {  ShowMessage("Сначала нужно подключить БД!");      }
-
-        if (ComboBox2->Text=="")
-        {          return;     }
-     }
-}
-//---------------------------------------------------------------------------
-
 
 void __fastcall TForm1::Edit3KeyPress(TObject *Sender, char &Key)
 {
- if((Key!=VK_BACK)&&(Key<'0'||Key>'9')&&(Key!=','))Key=0;// Обработчик ввода A        
+ if((Key!=VK_BACK)&&(Key<'0'||Key>'9')&&(Key!=','))Key=0;// Обработчик ввода A
 }
-//---------------------------------------------------------------------------
 
-
-
+//---------------------[График ПРОГНОЗА]------------------------------------------------------
 void __fastcall TForm1::CheckBox4Click(TObject *Sender)
 {
+ if (StringGrid3->RowCount > 2)
+ {
           if (CheckBox4->Checked == true)
            {
             Series4->Clear(); Series8->Clear();
@@ -694,10 +496,219 @@ void __fastcall TForm1::CheckBox4Click(TObject *Sender)
                         double AlPrY = StrToFloat(StringGrid3->Cells[8][i+1]);
                         double MuPrX1 = StrToFloat(StringGrid3->Cells[7][i+2]);
                         double AlPrY1 = StrToFloat(StringGrid3->Cells[8][i+2]);
-                        Series4->AddArrow(MuPrX, AlPrY, MuPrX1, AlPrY1, "", clYellow);
-                        Series8->AddXY(MuPrX, AlPrY, "Fuck" , clLime);
+                        Series4->AddArrow(MuPrX, AlPrY, MuPrX1, AlPrY1, "", clBlack);
+                        Series8->AddXY(MuPrX, AlPrY, "" , clBlack);
                    }
            }
-          else {Series4->Clear(); Series8->Clear();}  }
+          else {Series4->Clear(); Series8->Clear();}
+       }
+ else
+ {
+  if (StringGrid3->RowCount <= 2)
+    {
+     CheckBox4->Checked = false;
+    }
+  ShowMessage("Нет необходимых расчетов!");
+ }
+}
+
+//-------------------[График 4-го уровня]---------------------------------------
+void __fastcall TForm1::Button5Click(TObject *Sender)
+{
+if (ComboBox1->Text!="" && Edit1->Text!="")//Проверка
+ {
+   if (ComboBox2->Text!="")
+     {
+       Series9->Clear(); Series10->Clear();
+       ADOTable1->First();
+       int i=1;
+        while (!ADOTable1->Eof)
+             {
+              double X = ADOTable1->Fields->Fields[0]->AsFloat;
+              double Y = ADOTable1->FieldByName(ComboBox2->Text)->AsFloat;
+
+              ADOTable1->Next();
+
+              double X1 = ADOTable1->Fields->Fields[0]->AsFloat;
+              double Y1 = ADOTable1->FieldByName(ComboBox2->Text)->AsFloat;
+
+              Series9->AddArrow(X, Y, X1, Y1, "", clRed);   // StringGrid2->Cells[0][3]   StringGrid2->Cells[0][i]
+              Series10->AddXY(X1, Y1, "", clRed);
+              i++;
+             }
+
+
+
+
+           //double X = ADOTable1->Fields->Fields[0]->AsFloat;
+           //double Y = ADOTable1->FieldByName(ComboBox2->Text)->AsFloat;
+
+          // double X1 = ADOTable1->FieldByName(ComboBox2->Text)->AsFloat+1;
+          // double Y1 = ADOTable1->Fields->Fields[1]->AsFloat+1;
+
+           //Series11->AddXY(X, Y, "", clRed);
+
+          
+     }
+ }//END проверка
+ else {if (ComboBox1->Text=="" || Edit1->Text=="")ShowMessage("Не открыта БД или таблица!");}
+}
+
+//-------------------------[График МЮ(Альфа)]-----------------------------------
+void __fastcall TForm1::CheckBox1Click(TObject *Sender)
+{
+ if (StringGrid3->RowCount > 2)
+ { 
+  if (CheckBox1->Checked == true)
+           {
+            Series1->Clear(); Series5->Clear();
+            for( int i = 0; i < ADOTable1->RecordCount-1; i++)
+                   {
+                    //Отчерчиваем график Мю(Альфа)
+                     double MuX = StrToFloat(StringGrid3->Cells[1][i+1]);
+                     double AlY = StrToFloat(StringGrid3->Cells[2][i+1]);
+                     double MuX1 = StrToFloat(StringGrid3->Cells[1][i+2]);
+                     double AlY1 = StrToFloat(StringGrid3->Cells[2][i+2]);
+                     Series1->AddArrow(MuX, AlY, MuX1, AlY1, StringGrid3->Cells[1][i+1], clRed); //Mu(Al)
+                     Series5->AddXY(MuX, AlY, "" , clRed);
+                   }
+           }
+   else {Series1->Clear(); Series5->Clear();}
+ }
+ else
+ {
+  if (StringGrid3->RowCount <= 2)
+    {
+     CheckBox1->Checked = false;                         
+    }
+  ShowMessage("Нет необходимых расчетов!");
+ }
+}
+
+//-------------------------[График МЮ+(Альфа+)]-----------------------------------
+void __fastcall TForm1::CheckBox2Click(TObject *Sender)
+{
+if (StringGrid3->RowCount > 2)
+ {
+ if (CheckBox2->Checked == true)
+           {
+            Series3->Clear(); Series7->Clear();
+            for( int i = 0; i < ADOTable1->RecordCount-1; i++)
+                   {
+                         double MuMaxX = StrToFloat(StringGrid3->Cells[3][i+1]);
+                         double AlMaxY = StrToFloat(StringGrid3->Cells[5][i+1]);
+                         double MuMaxX1 = StrToFloat(StringGrid3->Cells[3][i+2]);
+                         double AlMaxY1 = StrToFloat(StringGrid3->Cells[5][i+2]);
+                         Series3->AddArrow(MuMaxX, AlMaxY, MuMaxX1, AlMaxY1, StringGrid3->Cells[3][i+1], clGreen);
+                         Series7->AddXY(MuMaxX, AlMaxY, "" , clGreen);
+                   }
+           }
+          else {Series3->Clear(); Series7->Clear();}
+        }
+ else
+ {
+  if (StringGrid3->RowCount <= 2)
+    {
+     CheckBox2->Checked = false;
+    }
+  ShowMessage("Нет необходимых расчетов!");
+ }
+}
+
+//-----------------------------[График Мю-(Альфа-)]-----------------------------
+void __fastcall TForm1::CheckBox3Click(TObject *Sender)
+{
+ if (StringGrid3->RowCount > 2)
+ {
+   if (CheckBox3->Checked == true)
+           {
+            Series2->Clear(); Series6->Clear();
+            for( int i = 0; i < ADOTable1->RecordCount-1; i++)
+                   {
+                        double MuMinX = StrToFloat(StringGrid3->Cells[4][i+1]);
+                        double AlMinY = StrToFloat(StringGrid3->Cells[6][i+1]);
+                        double MuMinX1 = StrToFloat(StringGrid3->Cells[4][i+2]);
+                        double AlMinY1 = StrToFloat(StringGrid3->Cells[6][i+2]);
+                        Series2->AddArrow(MuMinX, AlMinY, MuMinX1, AlMinY1, StringGrid3->Cells[4][i+1], clBlue); //StringGrid3->Cells[4][i+1]
+                        Series6->AddXY(MuMinX, AlMinY, "" , clBlue);
+                   }
+           }
+          else {Series2->Clear(); Series6->Clear();}
+        }
+ else
+ {
+  if (StringGrid3->RowCount <= 2)
+    {
+     CheckBox3->Checked = false;
+    }
+  ShowMessage("Нет необходимых расчетов!");
+ }
+}
 //---------------------------------------------------------------------------
+
+void __fastcall TForm1::ComboBox2KeyPress(TObject *Sender, char &Key)
+{
+ if((Key!=VK_BACK)&&(Key<'0'||Key>'9'))Key=0;// Обработчик ввода марки
+}
+
+//---------------------[Добавить запись]----------------------------------------
+void __fastcall TForm1::Button3Click(TObject *Sender)
+{
+if (ADOTable1->Active==true)
+{
+ double h, h0, h1;
+ double n=(ADOTable1->FieldCount-1); //Колличество столбцев
+ double *ptrarray = new double [n];
+ srand(time(NULL));  //Псевдослучайные числа с привязкой к текущему времени
+
+ ADOTable1 -> First();
+ while (!ADOTable1->Eof) //Модуль суммы разностей
+{
+  h0 = ADOTable1->Fields->Fields[1]->AsFloat;
+  if (ADOTable1->Eof) break;
+  ADOTable1 -> Next();
+  h1 = ADOTable1->Fields->Fields[1]->AsFloat;
+  h += fabs(h1-h0); //fabs модуль
+ }
+
+ double dD = h/(Form1->ADOTable1->RecordCount-1);
+ double dD_t=dD;
+
+ int t=1;
+ while (dD_t<1)
+ {
+  dD_t = dD_t*10;
+  t++;
+ }
+
+ double dG=0;
+ ADOTable1->First();
+ for (int i=1;i<=ADOTable1->FieldCount-1;i++)
+ {
+  dG=(rand()%(int(dD*pow(10,t))*2+1)-int(dD*pow(10,t)))/pow(10,t);
+  ptrarray[i-1]=ADOTable1->Fields->Fields[i]->AsFloat+dG;
+ }
+
+ ADOTable1 -> Last();
+ ADOTable1 -> Insert();
+ ADOTable1->Fields->Fields[0]->AsFloat = ADOTable1->RecordCount+1; //Добавление сроки
+
+ for (int i=0; i<ADOTable1->FieldCount-1; i++)
+ {
+  ADOTable1->Fields->Fields[i+1]->AsFloat=(ptrarray[i]);
+ }
+ ADOTable1->Post();
+ delete [] ptrarray;
+}
+else
+{
+ ShowMessage("Таблица не открыта!");
+}
+}
+//------------------------------------------------------------------------------
+
+
+
+
+
 
