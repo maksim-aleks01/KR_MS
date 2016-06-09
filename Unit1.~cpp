@@ -392,20 +392,18 @@ void __fastcall TForm1::Button4Click(TObject *Sender)
 
   for(int f=0; f<StringGrid2->RowCount-1; f++)
   {
-    k=0.0; kMax=0; kMin=0;
+    k=0; kMax=0; kMin=0;
        for (int j=1; j<StringGrid2->ColCount; j++)
        {
           double dbTemp1 = Str0Array[j-1];
           double dbTemp2 = StrToFloat(StringGrid2->Cells[j][f+1]);
 
           k += dbTemp1 * dbTemp2; // перемножение элементов 1ой строки на элементы таблицы
-          double temp3 = k;
+                                                                                // double temp3 = k;
           kMax += MaxStr0Array[j-1] * ((StrToFloat(StringGrid2->Cells[j][f+1]))+E);
           kMin += MinStr0Array[j-1] * ((StrToFloat(StringGrid2->Cells[j][f+1]))-E);
        }
 
-
-      //double dProverka = k/(MuArray[0]*MuArray[f]);
       double dProverka = k/(MuArray[0]*MuArray[f]);
       double MaXdProverka = kMax/(MaxMuArray[0]*MaxMuArray[f]);
       double MiNdProverka = kMin/(MinMuArray[0]*MinMuArray[f]);
@@ -415,14 +413,14 @@ void __fastcall TForm1::Button4Click(TObject *Sender)
       if (MiNdProverka > 1 ) MiNdProverka = 1;
 
 
-         //AlArray[f] = acos(dProverka) * 180.0 / M_PI;   //acos
-         AlArray[f] = acos(dProverka);
+                                                                                //AlArray[f] = acos(dProverka) * 180.0 / M_PI;   //acos
+         AlArray[f] = acos(dProverka); //(int(dProverka*pow(10,7)))/pow(10,7);
          MaxAlArray[f] = acos(MaXdProverka);
          MinAlArray[f] = acos(MiNdProverka);
 
 
-      SumAl += AlArray[f];
-      StringGrid3->Cells[2][f+1] = FloatToStrF(AlArray[f],ffFixed,9,10);//Вывод ALpha в таблицу
+      SumAl += AlArray[f];                                                       //FloatToStrF,ffFixed,9,7
+      StringGrid3->Cells[2][f+1] = FloatToStr(AlArray[f]);//Вывод ALpha в таблицу, с отсечением лишних знаков
       StringGrid3->Cells[5][f+1] = FloatToStr(MaxAlArray[f]);//Вывод ALpha+ в таблицу
       StringGrid3->Cells[6][f+1] = FloatToStr(MinAlArray[f]);//Вывод ALpha- в таблицу
 
@@ -433,13 +431,13 @@ void __fastcall TForm1::Button4Click(TObject *Sender)
      double MuPr0 = MuArray[0] * A +(1-A) * (SumMu/StrToFloat(ADOTable1->RecordCount)); //Расчет 0-го прогнрзного значения Мю, среднее значение
      StringGrid3->Cells[7][1] = MuPr0;
 
-     double MuPrArray[100];
-     for (int i=0; i<ADOTable1->RecordCount; i++)
+     double MuPrArray[100]; for (int i=0; i<100; i++) MuPrArray[i] = 0;
+     for (int i=0; i<ADOTable1->RecordCount-1; i++)
         {
           MuPrArray[i] = MuArray[i+1] * A +(1-A) * MuPr0;
           StringGrid3->Cells[7][i+2] = MuPrArray[i];//Вывод Прогнозного Мю в таблицу
         }
-     double MuPrB = (SumMu/StrToFloat(ADOTable1->RecordCount)) * A +(1-A) * MuPrArray[ADOTable1->RecordCount]; //Мю последнее
+     double MuPrB = (SumMu/StrToFloat(StringGrid2->RowCount-1))*A +(1-A) * MuPrArray[StringGrid2->RowCount]; //Мю последнее
      StringGrid3->Cells[7][ADOTable1->RecordCount+1] = MuPrB;
      //////END Mu-pr//////
 
@@ -447,14 +445,14 @@ void __fastcall TForm1::Button4Click(TObject *Sender)
      double AlPr0 = AlArray[0] * A +(1-A) * (SumAl/StrToFloat(ADOTable1->RecordCount)); //Расчет 0-го прогнрзного значения Мю
      StringGrid3->Cells[8][1] = AlPr0;
 
-     double AlPrArray[100];
+     double AlPrArray[100]; for (int i=0; i<100; i++) AlPrArray[i] = 0;
      for (int i=0; i<ADOTable1->RecordCount; i++)
         {
           AlPrArray[i] = AlArray[i+1] * A +(1-A) * AlPr0;
           StringGrid3->Cells[8][i+2] = AlPrArray[i];//Вывод Прогнозного Альфа в таблицу
         }
-     double AlPrB = SumAl-AlArray[0]/(StrToFloat(ADOTable1->RecordCount-1))*A+(1-A)*AlPrArray[ADOTable1->RecordCount-1];
-
+    // double AlPrB = SumAl-AlArray[0]/(StrToFloat(ADOTable1->RecordCount-1))*A+(1-A)*AlPrArray[ADOTable1->RecordCount-1];
+    double AlPrB = (SumAl/StrToFloat(StringGrid2->RowCount-1)) * A +(1-A) * AlPrArray[StringGrid2->RowCount-1];
 
      StringGrid3->Cells[0][ADOTable1->RecordCount+1] = "Прогноз: ";
      StringGrid3->Cells[8][ADOTable1->RecordCount+1] = AlPrB;
@@ -521,6 +519,7 @@ if (ComboBox1->Text!="" && Edit1->Text!="")//Проверка
      {
        Series9->Clear(); Series10->Clear();
        ADOTable1->First();
+       int i=1;
         while (!ADOTable1->Eof)
              {
               double X = ADOTable1->Fields->Fields[0]->AsFloat;
@@ -531,8 +530,9 @@ if (ComboBox1->Text!="" && Edit1->Text!="")//Проверка
               double X1 = ADOTable1->Fields->Fields[0]->AsFloat;
               double Y1 = ADOTable1->FieldByName(ComboBox2->Text)->AsFloat;
 
-              Series9->AddArrow(X, Y, X1, Y1, "", clRed);
+              Series9->AddArrow(X, Y, X1, Y1, "", clRed);   // StringGrid2->Cells[0][3]   StringGrid2->Cells[0][i]
               Series10->AddXY(X1, Y1, "", clRed);
+              i++;
              }
 
 
@@ -704,6 +704,7 @@ else
 }
 }
 //------------------------------------------------------------------------------
+
 
 
 

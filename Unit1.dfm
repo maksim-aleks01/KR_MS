@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 186
-  Top = 40
+  Left = 100
+  Top = 140
   Width = 1296
   Height = 611
   Caption = 'Form1'
@@ -41,8 +41,8 @@ object Form1: TForm1
     Top = 0
     Width = 1273
     Height = 529
-    ActivePage = TabSheet4
-    TabIndex = 2
+    ActivePage = TabSheet2
+    TabIndex = 1
     TabOrder = 1
     object TabSheet1: TTabSheet
       Caption = #1041#1072#1079#1072' '#1076#1072#1085#1085#1099#1093
@@ -448,7 +448,12 @@ object Form1: TForm1
             BottomAxis.DateTimeFormat = 'dd.MM.yyyy'
             BottomAxis.LabelStyle = talNone
             BottomAxis.RoundFirstLabel = False
-            BottomAxis.Title.Caption = #1052#1102
+            BottomAxis.Title.Caption = 'Mu'
+            BottomAxis.Title.Font.Charset = ANSI_CHARSET
+            BottomAxis.Title.Font.Color = clBlack
+            BottomAxis.Title.Font.Height = -11
+            BottomAxis.Title.Font.Name = 'Arial Narrow'
+            BottomAxis.Title.Font.Style = []
             DepthAxis.AxisValuesFormat = '#,##0.########'
             LeftAxis.AxisValuesFormat = '#,##0.#######'
             LeftAxis.RoundFirstLabel = False
