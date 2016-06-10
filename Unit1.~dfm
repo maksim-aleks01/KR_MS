@@ -1,8 +1,8 @@
 object Form1: TForm1
-  Left = 100
-  Top = 140
+  Left = 243
+  Top = 309
   Width = 1296
-  Height = 611
+  Height = 535
   Caption = 'Form1'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -16,8 +16,8 @@ object Form1: TForm1
   TextHeight = 13
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 532
-    Width = 1280
+    Top = 529
+    Width = 1273
     Height = 20
     Panels = <
       item
@@ -374,6 +374,7 @@ object Form1: TForm1
               Height = 21
               TabOrder = 0
               Text = '0,005'
+              OnChange = Edit2Change
               OnKeyPress = Edit2KeyPress
             end
             object Edit3: TEdit
@@ -383,6 +384,7 @@ object Form1: TForm1
               Height = 21
               TabOrder = 1
               Text = '0,1'
+              OnChange = Edit3Change
               OnKeyPress = Edit3KeyPress
             end
           end
@@ -445,7 +447,6 @@ object Form1: TForm1
             Title.Text.Strings = (
               #1043#1088#1072#1092#1080#1082' '#1079#1072#1074#1080#1089#1080#1084#1086#1089#1090#1077#1081':')
             BottomAxis.DateTimeFormat = 'dd.MM.yyyy'
-            BottomAxis.LabelStyle = talNone
             BottomAxis.RoundFirstLabel = False
             BottomAxis.Title.Caption = 'Mu'
             BottomAxis.Title.Font.Charset = ANSI_CHARSET
@@ -628,7 +629,6 @@ object Form1: TForm1
               Marks.Visible = False
               SeriesColor = clGray
               Title = #1058#1086#1095#1082#1080' +'
-              Pointer.Brush.Color = 8453888
               Pointer.InflateMargins = True
               Pointer.Style = psRectangle
               Pointer.Visible = True
@@ -646,7 +646,6 @@ object Form1: TForm1
               Marks.Visible = False
               SeriesColor = clFuchsia
               Title = #1058#1086#1095#1082#1080' -'
-              Pointer.Brush.Color = clBlue
               Pointer.InflateMargins = True
               Pointer.Style = psRectangle
               Pointer.Visible = True

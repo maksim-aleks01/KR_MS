@@ -1,8 +1,8 @@
 object Form1: TForm1
-  Left = 100
-  Top = 140
+  Left = 243
+  Top = 309
   Width = 1296
-  Height = 611
+  Height = 535
   Caption = 'Form1'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -16,8 +16,8 @@ object Form1: TForm1
   TextHeight = 13
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 532
-    Width = 1280
+    Top = 529
+    Width = 1273
     Height = 20
     Panels = <
       item
@@ -93,7 +93,6 @@ object Form1: TForm1
         Height = 21
         ItemHeight = 13
         TabOrder = 2
-        Text = 'XX'
       end
       object Button2: TButton
         Left = 216
@@ -379,9 +378,9 @@ object Form1: TForm1
             end
             object Edit3: TEdit
               Left = 56
-              Top = 52
+              Top = 56
               Width = 121
-              Height = 21
+              Height = 17
               TabOrder = 1
               Text = '0,1'
               OnKeyPress = Edit3KeyPress
@@ -446,7 +445,6 @@ object Form1: TForm1
             Title.Text.Strings = (
               #1043#1088#1072#1092#1080#1082' '#1079#1072#1074#1080#1089#1080#1084#1086#1089#1090#1077#1081':')
             BottomAxis.DateTimeFormat = 'dd.MM.yyyy'
-            BottomAxis.LabelStyle = talNone
             BottomAxis.RoundFirstLabel = False
             BottomAxis.Title.Caption = 'Mu'
             BottomAxis.Title.Font.Charset = ANSI_CHARSET
@@ -629,7 +627,6 @@ object Form1: TForm1
               Marks.Visible = False
               SeriesColor = clGray
               Title = #1058#1086#1095#1082#1080' +'
-              Pointer.Brush.Color = 8453888
               Pointer.InflateMargins = True
               Pointer.Style = psRectangle
               Pointer.Visible = True
@@ -647,7 +644,6 @@ object Form1: TForm1
               Marks.Visible = False
               SeriesColor = clFuchsia
               Title = #1058#1086#1095#1082#1080' -'
-              Pointer.Brush.Color = clBlue
               Pointer.InflateMargins = True
               Pointer.Style = psRectangle
               Pointer.Visible = True
