@@ -1,8 +1,8 @@
 object Form1: TForm1
-  Left = 243
-  Top = 309
+  Left = 244
+  Top = 132
   Width = 1296
-  Height = 535
+  Height = 612
   Caption = 'Form1'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -12,12 +12,15 @@ object Form1: TForm1
   Font.Style = []
   Menu = MainMenu1
   OldCreateOrder = False
+  DesignSize = (
+    1280
+    553)
   PixelsPerInch = 96
   TextHeight = 13
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 529
-    Width = 1273
+    Top = 533
+    Width = 1280
     Height = 20
     Panels = <
       item
@@ -41,8 +44,9 @@ object Form1: TForm1
     Top = 0
     Width = 1273
     Height = 529
-    ActivePage = TabSheet2
-    TabIndex = 1
+    ActivePage = TabSheet1
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    TabIndex = 0
     TabOrder = 1
     object TabSheet1: TTabSheet
       Caption = #1041#1072#1079#1072' '#1076#1072#1085#1085#1099#1093
@@ -380,7 +384,7 @@ object Form1: TForm1
               Left = 56
               Top = 56
               Width = 121
-              Height = 17
+              Height = 21
               TabOrder = 1
               Text = '0,1'
               OnKeyPress = Edit3KeyPress
@@ -395,7 +399,7 @@ object Form1: TForm1
             Top = 32
             Width = 137
             Height = 105
-            Caption = #1043#1088#1072#1092#1080#1082#1080
+            Caption = #1043#1088#1072#1092#1080#1082#1080':'
             TabOrder = 0
             object CheckBox1: TCheckBox
               Left = 8
@@ -436,12 +440,13 @@ object Form1: TForm1
           end
           object Chart1: TDBChart
             Left = 144
-            Top = 8
-            Width = 969
+            Top = 0
+            Width = 1001
             Height = 417
             AnimatedZoomSteps = 10
             BackWall.Brush.Color = clWhite
             BackWall.Brush.Style = bsClear
+            LeftWall.Brush.Color = clWhite
             Title.Text.Strings = (
               #1043#1088#1072#1092#1080#1082' '#1079#1072#1074#1080#1089#1080#1084#1086#1089#1090#1077#1081':')
             BottomAxis.DateTimeFormat = 'dd.MM.yyyy'
@@ -457,11 +462,14 @@ object Form1: TForm1
             LeftAxis.RoundFirstLabel = False
             LeftAxis.Title.Caption = #1040#1083#1100#1092#1072
             Legend.Alignment = laBottom
+            Legend.ColorWidth = 40
             Legend.ResizeChart = False
             Legend.ShadowSize = 0
             Legend.TextStyle = ltsPlain
             Legend.VertMargin = 34
             View3D = False
+            BevelOuter = bvNone
+            BevelWidth = 0
             TabOrder = 1
             object Series1: TArrowSeries
               Marks.ArrowLength = 0
@@ -503,9 +511,8 @@ object Form1: TForm1
               Marks.Frame.Visible = False
               Marks.Transparent = True
               Marks.Visible = False
-              SeriesColor = 8453888
+              SeriesColor = clLime
               Title = 'Mu+(Al+)'
-              Pointer.Brush.Color = clWhite
               Pointer.InflateMargins = False
               Pointer.Style = psRectangle
               Pointer.Visible = True
@@ -575,7 +582,7 @@ object Form1: TForm1
               Marks.Transparent = True
               Marks.Visible = False
               SeriesColor = -1
-              Title = #1055#1088#1086#1075#1085#1086#1079#1085#1099#1077' Mu(Al)'
+              Title = #1055#1088#1086#1075#1085#1086#1079' Mu(Al)'
               Pointer.InflateMargins = False
               Pointer.Style = psRectangle
               Pointer.Visible = True
@@ -611,24 +618,7 @@ object Form1: TForm1
               Title = #1058#1086#1095#1082#1080' Mu(Al)'
               Pointer.Brush.Color = clRed
               Pointer.InflateMargins = True
-              Pointer.Style = psRectangle
-              Pointer.Visible = True
-              XValues.DateTime = False
-              XValues.Name = 'X'
-              XValues.Multiplier = 1
-              XValues.Order = loAscending
-              YValues.DateTime = False
-              YValues.Name = 'Y'
-              YValues.Multiplier = 1
-              YValues.Order = loNone
-            end
-            object Series6: TPointSeries
-              Marks.ArrowLength = 0
-              Marks.Visible = False
-              SeriesColor = clGray
-              Title = #1058#1086#1095#1082#1080' +'
-              Pointer.InflateMargins = True
-              Pointer.Style = psRectangle
+              Pointer.Style = psCircle
               Pointer.Visible = True
               XValues.DateTime = False
               XValues.Name = 'X'
@@ -643,9 +633,28 @@ object Form1: TForm1
               Marks.ArrowLength = 0
               Marks.Visible = False
               SeriesColor = clFuchsia
-              Title = #1058#1086#1095#1082#1080' -'
+              Title = #1058#1086#1095#1082#1080' Mu+(Al+)'
+              Pointer.Brush.Color = clLime
               Pointer.InflateMargins = True
-              Pointer.Style = psRectangle
+              Pointer.Style = psCircle
+              Pointer.Visible = True
+              XValues.DateTime = False
+              XValues.Name = 'X'
+              XValues.Multiplier = 1
+              XValues.Order = loAscending
+              YValues.DateTime = False
+              YValues.Name = 'Y'
+              YValues.Multiplier = 1
+              YValues.Order = loNone
+            end
+            object Series6: TPointSeries
+              Marks.ArrowLength = 0
+              Marks.Visible = False
+              SeriesColor = clGray
+              Title = #1058#1086#1095#1082'a Mu-(Al-)'
+              Pointer.Brush.Color = clBlue
+              Pointer.InflateMargins = True
+              Pointer.Style = psCircle
               Pointer.Visible = True
               XValues.DateTime = False
               XValues.Name = 'X'
@@ -660,10 +669,10 @@ object Form1: TForm1
               Marks.ArrowLength = 0
               Marks.Visible = False
               SeriesColor = clTeal
-              Title = #1055#1088#1086#1075#1085#1086#1079#1085#1099#1077' '#1090#1086#1095#1082#1080
+              Title = #1055#1088#1086#1075#1085#1086#1079#1085#1072#1103' '#1090#1086#1095#1082#1072' Mu(Al)'
               Pointer.Brush.Color = -1
               Pointer.InflateMargins = True
-              Pointer.Style = psRectangle
+              Pointer.Style = psCircle
               Pointer.Visible = True
               XValues.DateTime = False
               XValues.Name = 'X'
@@ -681,6 +690,8 @@ object Form1: TForm1
     object TabSheet4: TTabSheet
       Caption = '4 '#1091#1088#1086#1074#1077#1085#1100' '#1076#1077#1082#1086#1084#1087#1086#1079#1080#1094#1080#1080
       ImageIndex = 3
+      ParentShowHint = False
+      ShowHint = False
       object Chart2: TChart
         Left = 152
         Top = 8
@@ -699,6 +710,7 @@ object Form1: TForm1
         LeftAxis.Title.Caption = #1047#1085#1072#1095#1077#1085#1080#1077' '#1084#1072#1088#1082#1080' ('#1084')'
         Legend.Visible = False
         View3D = False
+        BevelOuter = bvNone
         TabOrder = 0
         object Series9: TArrowSeries
           Marks.ArrowLength = 0

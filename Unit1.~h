@@ -123,8 +123,6 @@ __published:	// IDE-managed Components
         void __fastcall CheckBox3Click(TObject *Sender);
         void __fastcall ComboBox2KeyPress(TObject *Sender, char &Key);
         void __fastcall Button3Click(TObject *Sender);
-        void __fastcall Edit2Change(TObject *Sender);
-        void __fastcall Edit3Change(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
         __fastcall TForm1(TComponent* Owner);

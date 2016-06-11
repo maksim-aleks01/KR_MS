@@ -244,7 +244,6 @@ void __fastcall TForm1::Button8Click(TObject *Sender)
         StringGrid3->Cells[i][j] = "";
        }
    }
-   Edit2->Text = 0.005; //Дефолтное ззначение Эпсилон
 }
 
 //---------------------------------------------------------------------------
@@ -292,13 +291,31 @@ if (ComboBox1->Text!="" && StringGrid2->RowCount > 2 && StringGrid2->ColCount >=
   double *AlArray = new double [iStrk]; //массив значений альфа
   double *MaxAlArray = new double [iStrk];
   double *MinAlArray = new double [iStrk];
-  double MuPrArray[100];    double AlPrArray[100];;
+
+  double *MuPrArray = new double[iStrk+1];
+  double *AlPrArray  = new double [iStrk+1];
 
   //////////////////////Epsilon///////////////////////////////////////////////
-   double E=StrToFloat(Edit2->Text);
+  
+  double E;
+   if (Edit2->Text > 1 || Edit2->Text <0)
+  {
+   ShowMessage("Неверное значение\nВведите значение в интервале 0 до 1\nПо умолчанию Epsilon = 0");
+   Edit2->Text = 0;
+  }
+  else
+  E=StrToFloat(Edit2->Text);
 
   //////////////////////Коэффицент А///////////////////////////////////////////////
-   double A=StrToFloat(Edit3->Text);
+   double A;
+   if (Edit3->Text > 1 || Edit3->Text <0)
+  {
+   ShowMessage("Неверное значение\nВведите значение в интервале 0 до 1\nПо умолчанию A = 0");
+   Edit3->Text = 0;
+  }
+  else
+  A=StrToFloat(Edit3->Text);
+
 
  StringGrid3->RowCount = StringGrid2->RowCount+1; //Строим структуру, строки
  StringGrid3->Cells[0][0] = StringGrid2->Cells[0][0]; //Имя нулевой ячейки
@@ -445,6 +462,8 @@ if (ComboBox1->Text!="" && StringGrid2->RowCount > 2 && StringGrid2->ColCount >=
   delete [] AlArray;
   delete [] MaxAlArray;
   delete [] MinAlArray;
+  delete [] MuPrArray;
+  delete [] AlPrArray;
  }
    else
    {
@@ -566,8 +585,8 @@ if (StringGrid3->RowCount > 2)
                          double AlMaxY = StrToFloat(StringGrid3->Cells[5][i+1]);
                          double MuMaxX1 = StrToFloat(StringGrid3->Cells[3][i+2]);
                          double AlMaxY1 = StrToFloat(StringGrid3->Cells[5][i+2]);
-                         Series3->AddArrow(MuMaxX, AlMaxY, MuMaxX1, AlMaxY1, StringGrid3->Cells[3][i+1], clGreen);
-                         Series7->AddXY(MuMaxX, AlMaxY, "" , clGreen);
+                         Series3->AddArrow(MuMaxX, AlMaxY, MuMaxX1, AlMaxY1, StringGrid3->Cells[3][i+1], clLime);
+                         Series7->AddXY(MuMaxX, AlMaxY, "" , clLime);
                    }
            }
           else {Series3->Clear(); Series7->Clear();}
